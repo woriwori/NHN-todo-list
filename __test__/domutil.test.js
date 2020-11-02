@@ -4,7 +4,6 @@ import helper from '@/lib/helper';
 const eventType = 'click';
 let mockFn = jest.fn();
 let element;
-let invalidElement;
 let clickEvent;
 function getMockFnReturnValue(fn, index) {
   return fn.mock.results[index].value;
@@ -13,13 +12,13 @@ function getMockFnReturnValue(fn, index) {
 beforeAll(() => {
   document.body.innerHTML = `<div id="foo"></div>`;
   element = document.getElementById('foo');
-  invalidElement = document.getElementById('bar');
 
   clickEvent = new Event(eventType, {bubbles: true});
 });
 
 afterEach(() => {
   mockFn.mockReset();
+  domutil.removeAll(element, eventType);
 });
 
 describe('요소 접근', () => {
@@ -60,8 +59,8 @@ describe('요소 접근', () => {
   });
 });
 
-describe.only('이벤트 바인딩 (공통)', () => {
-  test.only('유효하지 않은 요소로 이벤트 바인딩 시도하는 경우', () => {
+describe('이벤트 바인딩 (공통)', () => {
+  test('유효하지 않은 요소로 이벤트 바인딩 시도하는 경우', () => {
     // given
     const selectorEmptyString = '';
     const selectorNull = null;
@@ -141,38 +140,51 @@ describe.only('이벤트 바인딩 (공통)', () => {
 
 describe('이벤트 바인딩 (DOM Level 2)', () => {
   test('이벤트 바인딩 검사 (addEventListener)', () => {
+    // when
     domutil.on(element, eventType, mockFn);
     element.dispatchEvent(clickEvent);
 
+    // then
     expect(mockFn).toHaveBeenCalledTimes(1);
   });
 
   test('이벤트 핸들러 2개 이상 추가 (addEventListener)', () => {
+    // given
     const mockFnArr = [jest.fn(), jest.fn(), jest.fn()];
-    mockFnArr.forEach((f) => domutil.on(element, eventType, f));
 
+    // when
+    mockFnArr.forEach((f) => domutil.on(element, eventType, f));
     element.dispatchEvent(clickEvent);
 
-    expect(mockFnArr[1]).toHaveBeenCalledBefore(mockFnArr[2]);
+    // then
     expect(mockFnArr[0]).toHaveBeenCalledBefore(mockFnArr[1]);
+    expect(mockFnArr[1]).toHaveBeenCalledBefore(mockFnArr[2]);
   });
 
   test('이벤트 바인딩 제거 검사 (removeEventListener) ', () => {
+    // given
     domutil.on(element, eventType, mockFn);
 
+    // when
     domutil.off(element, eventType, mockFn);
     element.dispatchEvent(clickEvent);
 
+    // then
     expect(mockFn).toHaveBeenCalledTimes(0);
   });
 
   test('이벤트 핸들러 2개 이상 제거 (removeEventListener)', () => {
+    // given
     const mockFnArr = [jest.fn(), jest.fn(), jest.fn()];
     mockFnArr.forEach((f) => domutil.on(element, eventType, f));
 
+    // when
     domutil.off(element, eventType, mockFnArr[1]);
     element.dispatchEvent(clickEvent);
 
-    mockFnArr.forEach((f, i) => expect(f).toBeCalledTimes(i === 1 ? 0 : 1));
+    // then
+    expect(mockFnArr[0]).toHaveBeenCalledTimes(1);
+    expect(mockFnArr[1]).toHaveBeenCalledTimes(0);
+    expect(mockFnArr[2]).toHaveBeenCalledTimes(1);
   });
 });
