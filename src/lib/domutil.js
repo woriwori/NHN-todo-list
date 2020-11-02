@@ -30,7 +30,7 @@ const domutil = (function () {
     } else {
       addEvent = function (type, handler) {
         listeners.push(handler);
-        element[`on${type}`] = () => listeners.forEach((fn) => fn());
+        element[`on${type}`] = (e) => listeners.forEach((fn) => fn(e));
       };
     }
 
@@ -46,7 +46,7 @@ const domutil = (function () {
     } else {
       removeEvent = function (type, handler) {
         listeners = listeners.filter((fn) => fn !== handler);
-        element[`on${type}`] = () => listeners.forEach((fn) => fn());
+        element[`on${type}`] = (e) => listeners.forEach((fn) => fn(e));
       };
     }
   })();
