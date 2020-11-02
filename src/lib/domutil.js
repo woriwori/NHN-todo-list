@@ -13,6 +13,7 @@ const domutil = (function () {
     // on
     if (document.addEventListener) {
       addEvent = function (type, handler) {
+        listeners.push(handler);
         element.addEventListener(type, handler);
       };
     } else if (document.attachEvent) {
