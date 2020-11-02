@@ -139,55 +139,6 @@ describe.only('이벤트 바인딩 (공통)', () => {
   });
 });
 
-describe('이벤트 바인딩 (DOM Level 0)', () => {
-  test('이벤트 바인딩 검사 (onevent)', () => {
-    document.addEventListener = null;
-    document.attachEvent = null;
-
-    domutil.on(element, eventType, mockFn);
-    element.dispatchEvent(clickEvent);
-
-    expect(mockFn).toHaveBeenCalledTimes(1);
-  });
-
-  test('이벤트 핸들러 2개 이상 추가 (onevent)', () => {
-    const mockFnArr = [jest.fn(), jest.fn(), jest.fn()];
-    document.addEventListener = null;
-    document.attachEvent = null;
-
-    mockFnArr.forEach((f) => domutil.on(element, eventType, f));
-    element.dispatchEvent(clickEvent);
-
-    expect(mockFnArr[1]).toHaveBeenCalledBefore(mockFnArr[2]);
-    expect(mockFnArr[0]).toHaveBeenCalledBefore(mockFnArr[1]);
-  });
-
-  test('이벤트 바인딩 제거 검사 (null 할당)', () => {
-    document.addEventListener = null;
-    document.attachEvent = null;
-    document.removeEventListener = null;
-    document.detachEvent = null;
-    domutil.on(element, eventType, mockFn);
-
-    domutil.off(element, eventType, mockFn);
-    element.dispatchEvent(clickEvent);
-
-    expect(mockFn).toHaveBeenCalledTimes(0);
-  });
-
-  test('이벤트 핸들러 2개 이상 제거 (null 할당)', () => {
-    const mockFnArr = [jest.fn(), jest.fn(), jest.fn()];
-    mockFnArr.forEach((f) => domutil.on(element, eventType, f));
-
-    domutil.off(element, eventType, mockFnArr[1]);
-    element.dispatchEvent(clickEvent);
-
-    expect(mockFnArr[0]).toHaveBeenCalledTimes(1);
-    expect(mockFnArr[1]).toHaveBeenCalledTimes(0);
-    expect(mockFnArr[2]).toHaveBeenCalledTimes(1);
-  });
-});
-
 describe('이벤트 바인딩 (DOM Level 2)', () => {
   test('이벤트 바인딩 검사 (addEventListener)', () => {
     domutil.on(element, eventType, mockFn);
@@ -223,50 +174,5 @@ describe('이벤트 바인딩 (DOM Level 2)', () => {
     element.dispatchEvent(clickEvent);
 
     mockFnArr.forEach((f, i) => expect(f).toBeCalledTimes(i === 1 ? 0 : 1));
-  });
-});
-
-describe('이벤트 바인딩 (<IE9)', () => {
-  test('이벤트 바인딩 검사 (attachEvent)', () => {
-    document.attachEvent = document.addEventListener;
-    document.addEventListener = null;
-
-    domutil.on(element, eventType, mockFn);
-    element.dispatchEvent(clickEvent);
-
-    expect(mockFn).toHaveBeenCalledTimes(1);
-  });
-
-  test('이벤트 핸들러 2개 이상 추가 (attachEvent)', () => {
-    const mockFnArr = [jest.fn(() => 0), jest.fn(() => 1), jest.fn(() => 2)];
-    document.attachEvent = document.addEventListener;
-    document.addEventListener = null;
-
-    mockFnArr.forEach((f) => domutil.on(element, eventType, f));
-    element.dispatchEvent(clickEvent);
-
-    expect(mockFnArr[2]).toHaveBeenCalledBefore(mockFnArr[1]);
-    expect(mockFnArr[1]).toHaveBeenCalledBefore(mockFnArr[0]);
-  });
-
-  test('이벤트 바인딩 제거 검사 (detachEvent)', () => {
-    document.attachEvent = document.addEventListener;
-    document.addEventListener = null;
-    document.detachEvent = document.removeEventListener;
-    document.removeEventListener = null;
-    domutil.on(element, eventType, mockFn);
-
-    domutil.off(element, eventType, mockFn);
-    element.dispatchEvent(clickEvent);
-
-    expect(mockFn).toHaveBeenCalledTimes(0);
-  });
-
-  test('이벤트 핸들러 2개 이상 제거 (detachEvent)', () => {
-    // const mockFnArr = [jest.fn(), jest.fn(), jest.fn()];
-    // mockFnArr.forEach((f) => domutil.on(element, eventType, f));
-    // domutil.off(element, eventType, mockFnArr[1]);
-    // element.dispatchEvent(clickEvent);
-    // mockFnArr.forEach((f, i) => expect(f).toBeCalledTimes(i === 1 ? 0 : 1));
   });
 });
