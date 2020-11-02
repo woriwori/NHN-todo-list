@@ -1,8 +1,5 @@
 import helper from '@/lib/helper';
 
-document.addEventListener = null;
-document.removeEventListener = null;
-
 const domutil = (function () {
   let addEvent = null;
   let removeEvent = null;
@@ -53,13 +50,13 @@ const domutil = (function () {
     }
   })();
 
-  const on = (selector, type, handler) => {
+  function on(selector, type, handler) {
     element = helper.getElement(selector);
     helper.checkType(type);
     helper.checkHandler(handler);
     addEvent(type, handler);
-  };
-  const off = (selector, type, handler) => {
+  }
+  function off(selector, type, handler) {
     element = helper.getElement(selector);
     helper.checkType(type);
     helper.checkHandler(handler);
