@@ -1,0 +1,11 @@
+{
+  "parserOptions": {
+    "ecmaVersion": 12,
+    "sourceType": "module"
+  },
+  "env": {
+    "browser": true,
+    "es6": true
+  },
+  "extends": ["plugin:prettier/recommended", "tui/es6"],
+}
