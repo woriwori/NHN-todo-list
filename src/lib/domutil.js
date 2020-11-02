@@ -62,13 +62,21 @@ const domutil = (function () {
     helper.checkType(type);
     helper.checkHandler(handler);
     removeEvent(type, handler);
-  };
+  }
+  function removeAll(selector, type) {
+    element = helper.getElement(selector);
+    helper.checkType(type);
+    listeners.forEach((fn) => removeEvent(type, fn));
+  }
   return {
     on(selector, type, handler) {
       on(selector, type, handler);
     },
     off(selector, type, handler) {
       off(selector, type, handler);
+    },
+    removeAll(selector, type) {
+      removeAll(selector, type);
     }
   };
 })();
