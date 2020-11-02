@@ -30,6 +30,7 @@ const domutil = (function () {
       };
     } else {
       addEvent = function (type, handler) {
+        handler = handler.bind(element);
         listeners.push(handler);
         element[`on${type}`] = (e) => listeners.forEach((fn) => fn(e));
       };
