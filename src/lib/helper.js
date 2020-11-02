@@ -1,5 +1,5 @@
 const helper = (function () {
-  const getElement = (selector) => {
+  function getElement(selector) {
     let element = null;
 
     if (typeof selector === 'string') {
@@ -10,14 +10,15 @@ const helper = (function () {
     if (element === null) throw Error('요소가 존재하지 않습니다.');
 
     return element;
-  };
+  }
 
-  const checkType = (type) => {
+  function checkType(type) {
     if (typeof type !== 'string' || type === '') throw Error('올바른 이벤트 타입이 필요합니다.');
-  };
-  const checkHandler = (handler) => {
+  }
+
+  function checkHandler(handler) {
     if (typeof handler !== 'function') throw Error('올바른 이벤트 핸들러 함수가 필요합니다.');
-  };
+  }
 
   return {
     getElement(selector) {
@@ -31,4 +32,5 @@ const helper = (function () {
     }
   };
 })();
+
 export default helper;
