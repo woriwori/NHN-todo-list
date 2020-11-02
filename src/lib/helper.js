@@ -13,7 +13,7 @@ const helper = (function () {
   };
 
   const checkType = (type) => {
-    if (typeof type !== 'string' && type !== '') throw Error('올바른 이벤트 타입이 필요합니다.');
+    if (typeof type !== 'string' || type === '') throw Error('올바른 이벤트 타입이 필요합니다.');
   };
   const checkHandler = (handler) => {
     if (typeof handler !== 'function') throw Error('올바른 이벤트 핸들러 함수가 필요합니다.');
