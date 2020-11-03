@@ -1,32 +1,17 @@
-export function getElement(selector) {
+export const getElement = (selector) => {
   let element = null;
 
   if (isString(selector)) {
     element = document.querySelector(selector);
-  } else if (isElement(selector)) {
+  } else if (isElement(selector) || isWindow(selector)) {
     element = selector;
   }
   if (isNull(element)) throw Error('요소가 존재하지 않습니다.');
 
   return element;
-}
-
-export function isElement(v) {
-  return v instanceof Element;
-}
-
-export function isString(v) {
-  return typeof v === 'string';
-}
-
-export function isEmptyString(v) {
-  return v === '';
-}
-
-export function isFunction(v) {
-  return typeof v === 'function';
-}
-
-export function isNull(v) {
-  return v === null;
-}
+};
+export const isElement = (v) => v instanceof Element;
+export const isString = (v) => typeof v === 'string';
+export const isEmptyString = (v) => v === '';
+export const isFunction = (v) => typeof v === 'function';
+export const isNull = (v) => v === null;

@@ -49,28 +49,28 @@ let listeners = []; // TODO: 초기화, 요소-타입별 관리
   }
 })();
 
-export function on(selector, type, handler) {
+export const on = (selector, type, handler) => {
   element = getElement(selector);
 
   if (!isString(type) || isEmptyString(type)) throw Error('올바른 이벤트 타입이 필요합니다.');
   if (!isFunction(handler)) throw Error('올바른 이벤트 핸들러 함수가 필요합니다.');
 
   addEvent(type, handler);
-}
+};
 
-export function off(selector, type, handler) {
+export const off = (selector, type, handler) => {
   element = getElement(selector);
 
   if (!isString(type) || isEmptyString(type)) throw Error('올바른 이벤트 타입이 필요합니다.');
   if (!isFunction(handler)) throw Error('올바른 이벤트 핸들러 함수가 필요합니다.');
 
   removeEvent(type, handler);
-}
+};
 
-export function removeAll(selector, type) {
+export const removeAll = (selector, type) => {
   element = getElement(selector);
 
   if (!isString(type) || isEmptyString(type)) throw Error('올바른 이벤트 타입이 필요합니다.');
 
   listeners.forEach((fn) => removeEvent(type, fn));
-}
+};
