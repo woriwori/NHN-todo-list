@@ -6,16 +6,18 @@ let element = null;
 
 const listenersHelper = {
   listeners: new Map(),
-  push(element, type, handler) {
-    const handlers = listenersHelper.getHandlers(element, type); // [ () => {..}, ... ]
+  add(element, type, handler) {
+    const handlers = listenersHelper.getHandlers(element, type);
     handlers.push(handler);
   },
   getEventTypes(element) {
+    // return : Map { click => [], focus => [], ... }
     if (listenersHelper.listeners.has(element)) return listenersHelper.listeners.get(element);
     else return listenersHelper.listeners.set(element, new Map()).get(element);
   },
   getHandlers(element, type) {
-    const eventTypes = listenersHelper.getEventTypes(element); // Map { click => [], focus => [], ... }
+    // return :  [ () => {..}, ... ]
+    const eventTypes = listenersHelper.getEventTypes(element);
     if (eventTypes.has(type)) return eventTypes.get(type);
     else return eventTypes.set(type, []).get(type);
   }
@@ -25,17 +27,17 @@ const listenersHelper = {
   // on
   if (document.addEventListener) {
     addEvent = function (type, handler) {
-      listenersHelper.push(element, type, handler);
+      listenersHelper.add(element, type, handler);
       element.addEventListener(type, handler);
     };
   } else if (document.attachEvent) {
     addEvent = function (type, handler) {
       handler = handler.bind(element);
 
-      const reverseListeners = listeners.slice().reverse();
+      const reverseListeners = listenersHelper.getHandlers(element, type).slice().reverse();
       reverseListeners.forEach((fn) => element.detachEvent(type, fn));
 
-      listeners.push(handler);
+      listenersHelper.add(element, type, handler); // listeners가 갖고있는 핸들러 함수들은 항상 등록한 순서를 유지
       reverseListeners.unshift(handler);
 
       reverseListeners.forEach((fn) => element.attachEvent(type, fn));
@@ -43,8 +45,9 @@ const listenersHelper = {
   } else {
     addEvent = function (type, handler) {
       handler = handler.bind(element);
-      listeners.push(handler);
-      element[`on${type}`] = (e) => listeners.forEach((fn) => fn(e));
+      listenersHelper.add(element, type, handler);
+      const handlers = listenersHelper.getHandlers(element, type);
+      element[`on${type}`] = (e) => handlers.forEach((fn) => fn(e));
     };
   }
 
@@ -88,5 +91,5 @@ export const removeAll = (selector, type) => {
 
   if (!isString(type) || isEmptyString(type)) throw Error('올바른 이벤트 타입이 필요합니다.');
 
-  listeners.forEach((fn) => removeEvent(type, fn));
+  listenersHelper.getHandlers(element, type).forEach((fn) => removeEvent(type, fn));
 };
