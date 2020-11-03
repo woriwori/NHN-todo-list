@@ -63,6 +63,25 @@ describe('이벤트 바인딩 (공통)', () => {
     expect(throwErrorFn2).toThrow();
   });
 
+  test('동일한 selector가 document에 여러개 존재하는 경우', () => {
+    // given
+    element.innerHTML = `
+      <a>1</a>
+      <a id="second">2</a>
+      <a>3</a>`;
+    const firstAnchor = document.querySelector('a');
+    const secondAnchor = document.getElementById('second');
+    mockFn.mockReturnThis();
+
+    // when
+    domutil.on(firstAnchor, eventType, mockFn);
+    firstAnchor.dispatchEvent(clickEvent);
+
+    // then
+    expect(getMockFnReturnValue(mockFn, 0)).toEqual(firstAnchor);
+    expect(getMockFnReturnValue(mockFn, 0)).not.toEqual(secondAnchor);
+  });
+
   test('이벤트 핸들러 내부의 this value 검사', () => {
     // given
     mockFn.mockReturnThis();
