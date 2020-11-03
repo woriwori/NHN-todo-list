@@ -1,36 +1,32 @@
-const helper = (function () {
-  function getElement(selector) {
-    let element = null;
+export function getElement(selector) {
+  let element = null;
 
-    if (typeof selector === 'string') {
-      element = document.querySelector(selector);
-    } else if (selector instanceof Element) {
-      element = selector;
-    }
-    if (element === null) throw Error('요소가 존재하지 않습니다.');
-
-    return element;
+  if (isString(selector)) {
+    element = document.querySelector(selector);
+  } else if (isElement(selector)) {
+    element = selector;
   }
+  if (isNull(element)) throw Error('요소가 존재하지 않습니다.');
 
-  function checkType(type) {
-    if (typeof type !== 'string' || type === '') throw Error('올바른 이벤트 타입이 필요합니다.');
-  }
+  return element;
+}
 
-  function checkHandler(handler) {
-    if (typeof handler !== 'function') throw Error('올바른 이벤트 핸들러 함수가 필요합니다.');
-  }
+export function isElement(v) {
+  return v instanceof Element;
+}
 
-  return {
-    getElement(selector) {
-      return getElement(selector);
-    },
-    checkType(type) {
-      checkType(type);
-    },
-    checkHandler(handler) {
-      checkHandler(handler);
-    }
-  };
-})();
+export function isString(v) {
+  return typeof v === 'string';
+}
 
-export default helper;
+export function isEmptyString(v) {
+  return v === '';
+}
+
+export function isFunction(v) {
+  return typeof v === 'function';
+}
+
+export function isNull(v) {
+  return v === null;
+}
