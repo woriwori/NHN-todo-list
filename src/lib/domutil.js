@@ -2,14 +2,30 @@ import {getElement, isString, isEmptyString, isFunction} from '@/lib/helper';
 
 let addEvent = null;
 let removeEvent = null;
-let element = null; // TODO: 초기화
-let listeners = []; // TODO: 초기화, 요소-타입별 관리
+let element = null;
+
+const listenersHelper = {
+  listeners: new Map(),
+  push(element, type, handler) {
+    const handlers = listenersHelper.getHandlers(element, type); // [ () => {..}, ... ]
+    handlers.push(handler);
+  },
+  getEventTypes(element) {
+    if (listenersHelper.listeners.has(element)) return listenersHelper.listeners.get(element);
+    else return listenersHelper.listeners.set(element, new Map()).get(element);
+  },
+  getHandlers(element, type) {
+    const eventTypes = listenersHelper.getEventTypes(element); // Map { click => [], focus => [], ... }
+    if (eventTypes.has(type)) return eventTypes.get(type);
+    else return eventTypes.set(type, []).get(type);
+  }
+};
 
 (function () {
   // on
   if (document.addEventListener) {
     addEvent = function (type, handler) {
-      listeners.push(handler);
+      listenersHelper.push(element, type, handler);
       element.addEventListener(type, handler);
     };
   } else if (document.attachEvent) {
