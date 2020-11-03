@@ -56,10 +56,9 @@ const listenersHelper = {
     };
   } else {
     addEvent = function (type, handler) {
-      handler = handler.bind(element);
       listenersHelper.add(element, type, handler);
       const handlers = listenersHelper.getHandlers(element, type);
-      element[`on${type}`] = (e) => handlers.forEach((fn) => fn(e));
+      element[`on${type}`] = (e) => handlers.forEach((fn) => fn(e).call(element));
     };
   }
 
