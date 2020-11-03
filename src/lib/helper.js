@@ -11,6 +11,7 @@ export const getElement = (selector) => {
   return element;
 };
 export const isElement = (v) => v instanceof Element;
+export const isWindow = (v) => v === window;
 export const isString = (v) => typeof v === 'string';
 export const isEmptyString = (v) => v === '';
 export const isFunction = (v) => typeof v === 'function';
