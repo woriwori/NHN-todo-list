@@ -118,7 +118,7 @@ describe('이벤트 바인딩 (공통)', () => {
   });
 });
 
-describe.only('이벤트 바인딩', () => {
+describe('이벤트 바인딩', () => {
   test('이벤트 바인딩 검사', () => {
     // when
     domutil.on(element, eventType, mockFn);
@@ -141,7 +141,7 @@ describe.only('이벤트 바인딩', () => {
     expect(mockFnArr[1]).toHaveBeenCalledBefore(mockFnArr[2]);
   });
 
-  test.only('이벤트 바인딩 제거 검사', () => {
+  test('이벤트 바인딩 제거 검사', () => {
     // given
     domutil.on(element, eventType, mockFn);
 
