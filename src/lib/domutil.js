@@ -10,6 +10,14 @@ const listenersHelper = {
     const handlers = listenersHelper.getHandlers(element, type);
     handlers.push(handler);
   },
+  remove(element, type, handler) {
+    const handlers = listenersHelper.getHandlers(element, type);
+    listenersHelper.setHandlers(
+      element,
+      type,
+      handlers.filter((f) => f !== handler)
+    );
+  },
   getEventTypes(element) {
     // return : Map { click => [], focus => [], ... }
     if (listenersHelper.listeners.has(element)) return listenersHelper.listeners.get(element);
@@ -20,6 +28,10 @@ const listenersHelper = {
     const eventTypes = listenersHelper.getEventTypes(element);
     if (eventTypes.has(type)) return eventTypes.get(type);
     else return eventTypes.set(type, []).get(type);
+  },
+  setHandlers(element, type, handlers) {
+    const eventTypes = listenersHelper.getEventTypes(element);
+    eventTypes.set(type, handlers);
   }
 };
 
@@ -54,16 +66,19 @@ const listenersHelper = {
   // off
   if (document.removeEventListener) {
     removeEvent = function (type, handler) {
+      listenersHelper.remove(element, type, handler);
       element.removeEventListener(type, handler);
     };
   } else if (document.detachEvent) {
     removeEvent = function (type, handler) {
+      listenersHelper.remove(element, type, handler);
       element.detachEvent(type, handler);
     };
   } else {
     removeEvent = function (type, handler) {
-      listeners = listeners.filter((fn) => fn !== handler);
-      element[`on${type}`] = (e) => listeners.forEach((fn) => fn(e));
+      listenersHelper.remove(element, type, handler);
+      const handlers = listenersHelper.getHandlers(element, type);
+      element[`on${type}`] = (e) => handlers.forEach((fn) => fn(e));
     };
   }
 })();
