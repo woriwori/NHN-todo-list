@@ -1,38 +1,42 @@
 import util from '@/lib/util';
 
-const Child = {
-  sum: function (a, b) {
-    return a + b;
-  }
-};
-const ChildWithInit = {
-  init: function (a, b) {
-    this.a = a;
-    this.b = b;
-  },
-  sum: function () {
-    return this.a + this.b;
-  }
-};
-const Parent = {
-  sum: function (a, b, c) {
-    return a + b + c;
-  },
-  multi: function (a, b, c) {
-    return a * b * c;
-  }
-};
-const ParentWithInit = {
-  init: function () {
-    this.c = 10;
-  },
-  sum: function () {
-    return this.a + this.b + this.c;
-  },
-  multi: function () {
-    return this.a * this.b * this.c;
-  }
-};
+let Child, ChildWithInit, Parent, ParentWithInit;
+
+beforeEach(() => {
+  Child = {
+    sum: function (a, b) {
+      return a + b;
+    }
+  };
+  ChildWithInit = {
+    init: function (a, b) {
+      this.a = a;
+      this.b = b;
+    },
+    sum: function () {
+      return this.a + this.b;
+    }
+  };
+  Parent = {
+    sum: function (a, b, c) {
+      return a + b + c;
+    },
+    multi: function (a, b, c) {
+      return a * b * c;
+    }
+  };
+  ParentWithInit = {
+    init: function (c) {
+      this.c = c;
+    },
+    sum: function () {
+      return this.a + this.b + this.c;
+    },
+    multi: function () {
+      return this.a * this.b * this.c;
+    }
+  };
+});
 
 describe('인스턴스 생성', () => {
   test('생성자 함수 검사', () => {
@@ -155,12 +159,12 @@ describe('부모 클래스를 상속한 인스턴스 생성', () => {
       const ChildClass = util.defineClass(ChildWithInit, ParentWithInit);
 
       // when
-      const instance = new ChildClass(1, 3);
+      const instance = new ChildClass(1, 3, 5);
 
       // then
       expect(instance.a).toBe(1);
       expect(instance.b).toBe(3);
-      expect(instance.c).toBe(10);
+      expect(instance.c).toBe(5);
     });
 
     test('메소드 오버라이딩 검사', () => {
@@ -168,11 +172,11 @@ describe('부모 클래스를 상속한 인스턴스 생성', () => {
       const ChildClass = util.defineClass(ChildWithInit, ParentWithInit);
 
       // when
-      const instance = new ChildClass(1, 3);
+      const instance = new ChildClass(1, 3, 5);
 
       // then
       expect(instance.sum()).toBe(4); // 1 + 3
-      expect(instance.multi()).toBe(30); // 1 * 3 * 10
+      expect(instance.multi()).toBe(15); // 1 * 3 * 5
     });
   });
 });
