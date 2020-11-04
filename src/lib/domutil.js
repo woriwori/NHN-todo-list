@@ -1,7 +1,5 @@
 import {getElement, isString, isEmptyString, isFunction} from '@/lib/helper';
 
-let addEvent = null;
-let removeEvent = null;
 let element = null;
 
 const listenersHelper = {
@@ -11,32 +9,39 @@ const listenersHelper = {
     handlers.push(handler);
   },
   remove(element, type, handler) {
-    const handlers = listenersHelper.getHandlers(element, type);
-    listenersHelper.setHandlers(
-      element,
-      type,
-      handlers.filter((f) => f !== handler)
-    );
+    const filteredHandlers = listenersHelper.getHandlers(element, type).filter((f) => f !== handler);
+    listenersHelper.setHandlers(element, type, filteredHandlers);
   },
   getEventTypes(element) {
     // return : Map { click => [], focus => [], ... }
-    if (listenersHelper.listeners.has(element)) return listenersHelper.listeners.get(element);
-    else return listenersHelper.listeners.set(element, new Map()).get(element);
+    const isEmptyEventTypes = !listenersHelper.listeners.has(element);
+    if (isEmptyEventTypes) {
+      return listenersHelper.listeners.set(element, new Map()).get(element);
+    }
+
+    return listenersHelper.listeners.get(element);
   },
   getHandlers(element, type) {
     // return :  [ () => {..}, ... ]
     const eventTypes = listenersHelper.getEventTypes(element);
-    if (eventTypes.has(type)) return eventTypes.get(type);
-    else return eventTypes.set(type, []).get(type);
+    const hasEventType = eventTypes.has(type);
+    let handlers = eventTypes.get(type);
+
+    if (!hasEventType) {
+      handlers = listenersHelper.initializeHandlers(eventTypes, type);
+    }
+
+    return handlers;
+  },
+  initializeHandlers(eventTypes, type) {
+    return eventTypes.set(type, []).get(type);
   },
   setHandlers(element, type, handlers) {
-    const eventTypes = listenersHelper.getEventTypes(element);
-    eventTypes.set(type, handlers);
+    listenersHelper.getEventTypes(element).set(type, handlers);
   }
 };
 
-(function () {
-  // on
+let addEvent = function (type, handler) {
   if (document.addEventListener) {
     addEvent = function (type, handler) {
       listenersHelper.add(element, type, handler);
@@ -61,8 +66,10 @@ const listenersHelper = {
       element[`on${type}`] = (e) => handlers.forEach((fn) => fn(e).call(element));
     };
   }
+  addEvent(type, handler);
+};
 
-  // off
+let removeEvent = function (type, handler) {
   if (document.removeEventListener) {
     removeEvent = function (type, handler) {
       listenersHelper.remove(element, type, handler);
@@ -80,14 +87,14 @@ const listenersHelper = {
       element[`on${type}`] = (e) => handlers.forEach((fn) => fn(e));
     };
   }
-})();
+  removeEvent(type, handler);
+};
 
 export const on = (selector, type, handler) => {
   element = getElement(selector);
 
   if (!isString(type) || isEmptyString(type)) throw Error('올바른 이벤트 타입이 필요합니다.');
   if (!isFunction(handler)) throw Error('올바른 이벤트 핸들러 함수가 필요합니다.');
-
   addEvent(type, handler);
 };
 
