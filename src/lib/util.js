@@ -6,15 +6,16 @@ const util = {
       return util.makeClass(Child);
     }
 
-    // 상속
+    // inheritance
     const ParentClass = util.makeClass(Parent);
-    const _init = isFunction(Child.init) ? Child.init : null;
-    const initFunction = function (...args) {
+    const childInit = isFunction(Child.init) ? Child.init : null;
+
+    Child.init = function (...args) {
       ParentClass.apply(this);
-      if (!isNull(_init)) _init.apply(this, args);
+      if (!isNull(childInit)) childInit.apply(this, args);
     };
-    Child.init = initFunction;
     Child.init.prototype = new ParentClass();
+
     return util.makeClass(Child);
   },
   makeClass(properties) {
@@ -31,6 +32,7 @@ const util = {
 
     fakeClass.prototype.constructor = fakeClass;
     methods.forEach(([k, v]) => (fakeClass.prototype[k] = v));
+
     return fakeClass;
   }
 };
