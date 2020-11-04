@@ -1,11 +1,11 @@
 import util from '@/lib/util';
 
-const Sub = {
+const Child = {
   sum: function (a, b) {
     return a + b;
   }
 };
-const SubWithInit = {
+const ChildWithInit = {
   init: function (a, b) {
     this.a = a;
     this.b = b;
@@ -14,7 +14,7 @@ const SubWithInit = {
     return this.a + this.b;
   }
 };
-const Super = {
+const Parent = {
   sum: function (a, b, c) {
     return a + b + c;
   },
@@ -22,7 +22,7 @@ const Super = {
     return a * b * c;
   }
 };
-const SuperWithInit = {
+const ParentWithInit = {
   init: function () {
     this.c = 10;
   },
@@ -37,22 +37,22 @@ const SuperWithInit = {
 describe('인스턴스 생성', () => {
   test('생성자 함수 검사', () => {
     // given
-    const SubClass = util.defineClass(Sub);
+    const ChildClass = util.defineClass(Child);
 
     // when
-    const instance = new SubClass();
+    const instance = new ChildClass();
 
     // then
-    expect(SubClass.prototype.constructor).toEqual(SubClass);
-    expect(instance.constructor).toEqual(SubClass);
+    expect(ChildClass.prototype.constructor).toEqual(ChildClass);
+    expect(instance.constructor).toEqual(ChildClass);
   });
 
   test('메서드 검사', () => {
     // given
-    const SubClass = util.defineClass(Sub);
+    const ChildClass = util.defineClass(Child);
 
     // when
-    const instance = new SubClass();
+    const instance = new ChildClass();
 
     // then
     expect(instance.sum(1, 2)).toBe(3);
@@ -60,11 +60,11 @@ describe('인스턴스 생성', () => {
 
   test('인스턴스가 여러개인 경우', () => {
     // given
-    const SubClass = util.defineClass(SubWithInit);
+    const ChildClass = util.defineClass(ChildWithInit);
 
     // when
-    const instance1 = new SubClass(1, 2);
-    const instance2 = new SubClass(1, 2);
+    const instance1 = new ChildClass(1, 2);
+    const instance2 = new ChildClass(1, 2);
 
     // then
     expect(instance1.sum === instance2.sum).toBeTruthy();
@@ -74,21 +74,21 @@ describe('인스턴스 생성', () => {
   describe('매개변수를 전달하는 init 있는 경우', () => {
     test('instance type 검사', () => {
       // given
-      const SubClass = util.defineClass(SubWithInit);
+      const ChildClass = util.defineClass(ChildWithInit);
 
       // when
-      const instance = new SubClass(1, 3);
+      const instance = new ChildClass(1, 3);
 
       // then
-      expect(instance instanceof SubWithInit.init).toBeTruthy();
+      expect(instance instanceof ChildWithInit.init).toBeTruthy();
     });
 
     test('멤버 변수 검사', () => {
       // given
-      const SubClass = util.defineClass(SubWithInit);
+      const ChildClass = util.defineClass(ChildWithInit);
 
       // when
-      const instance = new SubClass(1, 3);
+      const instance = new ChildClass(1, 3);
 
       // then
       expect(instance.a).toBe(1);
@@ -100,22 +100,22 @@ describe('인스턴스 생성', () => {
 describe('부모 클래스를 상속한 인스턴스 생성', () => {
   test('생성자 함수 검사', () => {
     // given
-    const SubClass = util.defineClass(Sub, Super);
+    const ChildClass = util.defineClass(Child, Parent);
 
     // when
-    const instance = new SubClass();
+    const instance = new ChildClass();
 
     // then
-    expect(SubClass.prototype.constructor).toEqual(SubClass);
-    expect(instance.constructor).toEqual(SubClass);
+    expect(ChildClass.prototype.constructor).toEqual(ChildClass);
+    expect(instance.constructor).toEqual(ChildClass);
   });
 
   test('메서드 오버라이딩 검사', () => {
     // given
-    const SubClass = util.defineClass(Sub, Super);
+    const ChildClass = util.defineClass(Child, Parent);
 
     // when
-    const instance = new SubClass();
+    const instance = new ChildClass();
 
     // then
     expect(instance.sum(1, 3, 5)).toBe(4); // 1 + 3
@@ -125,11 +125,11 @@ describe('부모 클래스를 상속한 인스턴스 생성', () => {
 
   test('인스턴스가 여러개인 경우', () => {
     // given
-    const SubClass = util.defineClass(SubWithInit, SuperWithInit);
+    const ChildClass = util.defineClass(ChildWithInit, ParentWithInit);
 
     // when
-    const instance1 = new SubClass(1, 2);
-    const instance2 = new SubClass(1, 2);
+    const instance1 = new ChildClass(1, 2);
+    const instance2 = new ChildClass(1, 2);
 
     // then
     expect(instance1.sum === instance2.sum).toBeTruthy();
@@ -140,22 +140,22 @@ describe('부모 클래스를 상속한 인스턴스 생성', () => {
   describe('매개변수를 전달하는 init 있는 경우', () => {
     test('instance type 검사', () => {
       // given;
-      const SubClass = util.defineClass(SubWithInit, SuperWithInit);
+      const ChildClass = util.defineClass(ChildWithInit, ParentWithInit);
 
       // when
-      const instance = new SubClass(1, 3);
+      const instance = new ChildClass(1, 3);
 
       // then
-      expect(instance instanceof SubWithInit.init).toBeTruthy();
-      expect(instance instanceof SuperWithInit.init).toBeTruthy();
+      expect(instance instanceof ChildWithInit.init).toBeTruthy();
+      expect(instance instanceof ParentWithInit.init).toBeTruthy();
     });
 
     test('멤버 변수 검사', () => {
       // given;
-      const SubClass = util.defineClass(SubWithInit, SuperWithInit);
+      const ChildClass = util.defineClass(ChildWithInit, ParentWithInit);
 
       // when
-      const instance = new SubClass(1, 3);
+      const instance = new ChildClass(1, 3);
 
       // then
       expect(instance.a).toBe(1);
@@ -165,10 +165,10 @@ describe('부모 클래스를 상속한 인스턴스 생성', () => {
 
     test('메소드 오버라이딩 검사', () => {
       // given;
-      const SubClass = util.defineClass(SubWithInit, SuperWithInit);
+      const ChildClass = util.defineClass(ChildWithInit, ParentWithInit);
 
       // when
-      const instance = new SubClass(1, 3);
+      const instance = new ChildClass(1, 3);
 
       // then
       expect(instance.sum()).toBe(4); // 1 + 3
