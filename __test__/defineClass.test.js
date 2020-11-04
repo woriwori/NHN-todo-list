@@ -1,6 +1,6 @@
 import util from '@/lib/util';
 
-let Child, ChildWithInit, Parent, ParentWithInit;
+let Child, ChildWithInit, Parent, ParentWithInit, AncestorWithInit;
 
 beforeEach(() => {
   Child = {
@@ -34,6 +34,14 @@ beforeEach(() => {
     },
     multi: function () {
       return this.a * this.b * this.c;
+    }
+  };
+  AncestorWithInit = {
+    init: function (d) {
+      this.d = d;
+    },
+    say: function () {
+      console.log('ancestor class method !');
     }
   };
 });
@@ -188,6 +196,23 @@ describe('부모 클래스를 상속한 인스턴스 생성', () => {
       // then
       expect(instance instanceof ChildWithInit.init).toBeTruthy();
       expect(instance instanceof ParentWithInit.init).toBeTruthy();
+    });
+
+    test('2단계 상속 검사', () => {
+      // given;
+      const AncestorClass = util.defineClass(AncestorWithInit);
+      const ParentClass = util.defineClass(ParentWithInit, AncestorClass);
+      const ChildClass = util.defineClass(ChildWithInit, ParentClass);
+
+      // when
+      const instance = new ChildClass(1, 3, 5, 7);
+
+      // then
+      expect(instance instanceof ChildWithInit.init).toBeTruthy();
+      expect(instance instanceof ParentWithInit.init).toBeTruthy();
+      expect(instance instanceof AncestorWithInit.init).toBeTruthy();
+      expect(instance.c).toBe(5);
+      expect(instance.d).toBe(7);
     });
 
     test('멤버 변수 검사', () => {
