@@ -174,7 +174,7 @@ describe('이벤트 핸들러 등록 / 삭제', () => {
   });
 });
 
-describe.only('Custom Events mixin', () => {
+describe('Custom Events mixin', () => {
   let myObj, mixinEventType;
 
   beforeEach(() => {
