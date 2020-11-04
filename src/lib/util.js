@@ -1,29 +1,27 @@
-/*
-util.defineClass({ 자식 클래스 객체 }, ?SuperClass);
+import {isObject, isFunction, isNull} from '@/lib/helper';
 
-init 메서드가 존재하면 인스턴스를 생성할 때 호출되어야 한다.
-init 메서드안에서는 생성된 인스턴스를 this를 통해 접근 가능 하다.
-상속과정에서 부모의 init 메서드에서 생성되는 객체맴버는 명시적으로 자식에서 init 을 실행해야 상속 된다.
-상속과정에서 메서드는 오버라이딩이 가능하다.
-
-var Animal = util.defineClass({
-    init: function() {},
-    walk: function() {}
-});
-var Person = util.defineClass({
-    init: function() {},
-    talk: function() {}
-    // etc...
-}, Animal);
-
-var p = new Person();
-*/
 const util = {
   defineClass(Child, Parent) {
+    if (!Parent || !isObject(Parent)) {
+      return util.makeClass(Child);
+    }
+
+    // 상속
+    const ParentClass = util.makeClass(Parent);
+    const _init = isFunction(Child.init) ? Child.init : null;
+    const initFunction = function (...args) {
+      ParentClass.apply(this);
+      if (!isNull(_init)) _init.apply(this, args);
+    };
+    Child.init = initFunction;
+    Child.init.prototype = new ParentClass();
+    return util.makeClass(Child);
+  },
+  makeClass(properties) {
     const methods = [];
     let fakeClass = function () {};
 
-    Object.entries(Child).forEach(([k, v]) => {
+    Object.entries(properties).forEach(([k, v]) => {
       if (k === 'init') {
         fakeClass = v;
       } else {
@@ -33,7 +31,6 @@ const util = {
 
     fakeClass.prototype.constructor = fakeClass;
     methods.forEach(([k, v]) => (fakeClass.prototype[k] = v));
-
     return fakeClass;
   }
 };
