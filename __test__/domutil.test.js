@@ -63,6 +63,25 @@ describe('이벤트 바인딩 (공통)', () => {
     expect(throwErrorFn2).toThrow();
   });
 
+  test('동일한 selector가 document에 여러개 존재하는 경우', () => {
+    // given
+    element.innerHTML = `
+      <a>1</a>
+      <a id="second">2</a>
+      <a>3</a>`;
+    const firstAnchor = document.querySelector('a');
+    const secondAnchor = document.getElementById('second');
+    mockFn.mockReturnThis();
+
+    // when
+    domutil.on(firstAnchor, eventType, mockFn);
+    firstAnchor.dispatchEvent(clickEvent);
+
+    // then
+    expect(getMockFnReturnValue(mockFn, 0)).toEqual(firstAnchor);
+    expect(getMockFnReturnValue(mockFn, 0)).not.toEqual(secondAnchor);
+  });
+
   test('이벤트 핸들러 내부의 this value 검사', () => {
     // given
     mockFn.mockReturnThis();
@@ -99,8 +118,8 @@ describe('이벤트 바인딩 (공통)', () => {
   });
 });
 
-describe('이벤트 바인딩 (DOM Level 2)', () => {
-  test('이벤트 바인딩 검사 (addEventListener)', () => {
+describe('이벤트 바인딩', () => {
+  test('이벤트 바인딩 검사', () => {
     // when
     domutil.on(element, eventType, mockFn);
     element.dispatchEvent(clickEvent);
@@ -109,7 +128,7 @@ describe('이벤트 바인딩 (DOM Level 2)', () => {
     expect(mockFn).toHaveBeenCalledTimes(1);
   });
 
-  test('이벤트 핸들러 2개 이상 추가 (addEventListener)', () => {
+  test('이벤트 핸들러 2개 이상 추가', () => {
     // given
     const mockFnArr = [jest.fn(), jest.fn(), jest.fn()];
 
@@ -122,7 +141,7 @@ describe('이벤트 바인딩 (DOM Level 2)', () => {
     expect(mockFnArr[1]).toHaveBeenCalledBefore(mockFnArr[2]);
   });
 
-  test('이벤트 바인딩 제거 검사 (removeEventListener) ', () => {
+  test('이벤트 바인딩 제거 검사', () => {
     // given
     domutil.on(element, eventType, mockFn);
 
@@ -134,7 +153,7 @@ describe('이벤트 바인딩 (DOM Level 2)', () => {
     expect(mockFn).toHaveBeenCalledTimes(0);
   });
 
-  test('이벤트 핸들러 2개 이상 제거 (removeEventListener)', () => {
+  test('이벤트 핸들러 2개 이상 제거', () => {
     // given
     const mockFnArr = [jest.fn(), jest.fn(), jest.fn()];
     mockFnArr.forEach((f) => domutil.on(element, eventType, f));
