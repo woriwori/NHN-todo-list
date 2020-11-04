@@ -14,4 +14,5 @@ export const isElement = (v) => v instanceof Element;
 export const isString = (v) => typeof v === 'string';
 export const isEmptyString = (v) => v === '';
 export const isFunction = (v) => typeof v === 'function';
+export const isObject = (v) => v.toString() === '[object Object]';
 export const isNull = (v) => v === null;
