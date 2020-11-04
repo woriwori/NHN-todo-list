@@ -104,7 +104,8 @@ describe('인스턴스 생성', () => {
 describe('부모 클래스를 상속한 인스턴스 생성', () => {
   test('생성자 함수 검사', () => {
     // given
-    const ChildClass = util.defineClass(Child, Parent);
+    const ParentClass = util.defineClass(Parent);
+    const ChildClass = util.defineClass(Child, ParentClass);
 
     // when
     const instance = new ChildClass();
@@ -116,7 +117,8 @@ describe('부모 클래스를 상속한 인스턴스 생성', () => {
 
   test('메서드 오버라이딩 검사', () => {
     // given
-    const ChildClass = util.defineClass(Child, Parent);
+    const ParentClass = util.defineClass(Parent);
+    const ChildClass = util.defineClass(Child, ParentClass);
 
     // when
     const instance = new ChildClass();
@@ -129,7 +131,8 @@ describe('부모 클래스를 상속한 인스턴스 생성', () => {
 
   test('인스턴스가 여러개인 경우', () => {
     // given
-    const ChildClass = util.defineClass(ChildWithInit, ParentWithInit);
+    const ParentClass = util.defineClass(ParentWithInit);
+    const ChildClass = util.defineClass(ChildWithInit, ParentClass);
 
     // when
     const instance1 = new ChildClass(1, 2);
@@ -144,7 +147,8 @@ describe('부모 클래스를 상속한 인스턴스 생성', () => {
   describe('매개변수를 전달하는 init 있는 경우', () => {
     test('instance type 검사', () => {
       // given;
-      const ChildClass = util.defineClass(ChildWithInit, ParentWithInit);
+      const ParentClass = util.defineClass(ParentWithInit);
+      const ChildClass = util.defineClass(ChildWithInit, ParentClass);
 
       // when
       const instance = new ChildClass(1, 3);
@@ -155,8 +159,9 @@ describe('부모 클래스를 상속한 인스턴스 생성', () => {
     });
 
     test('멤버 변수 검사', () => {
-      // given;
-      const ChildClass = util.defineClass(ChildWithInit, ParentWithInit);
+      // given
+      const ParentClass = util.defineClass(ParentWithInit);
+      const ChildClass = util.defineClass(ChildWithInit, ParentClass);
 
       // when
       const instance = new ChildClass(1, 3, 5);
@@ -168,8 +173,9 @@ describe('부모 클래스를 상속한 인스턴스 생성', () => {
     });
 
     test('메소드 오버라이딩 검사', () => {
-      // given;
-      const ChildClass = util.defineClass(ChildWithInit, ParentWithInit);
+      // given
+      const ParentClass = util.defineClass(ParentWithInit);
+      const ChildClass = util.defineClass(ChildWithInit, ParentClass);
 
       // when
       const instance = new ChildClass(1, 3, 5);
