@@ -1,6 +1,8 @@
 import {isObject, isFunction, isNull} from '@/lib/helper';
 
 function getParams(childInit, args) {
+  args = [...args]; // 유사배열 => 배열
+
   let childParams = [];
   let parentParams = [];
 
@@ -46,11 +48,12 @@ const util = {
     // inheritance
     const childInit = isFunction(Child.init) ? Child.init : null;
 
-    Child.init = function (...args) {
-      const {childParams, parentParams} = getParams(childInit, args);
-
-      ParentClass.apply(this, parentParams);
-      if (!isNull(childInit)) childInit.apply(this, childParams);
+    Child.init = function () {
+      if (!isNull(childInit)) {
+        const {childParams, parentParams} = getParams(childInit, arguments);
+        ParentClass.apply(this, parentParams);
+        childInit.apply(this, childParams);
+      }
     };
     Child.init.prototype = new ParentClass();
 
