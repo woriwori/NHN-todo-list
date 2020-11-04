@@ -39,6 +39,18 @@ beforeEach(() => {
 });
 
 describe('인스턴스 생성', () => {
+  test('유효하지 않은 객체로 클래스 함수 생성 시도하는 경우', () => {
+    // when
+    const throwErrorFn1 = () => util.defineClass();
+    const throwErrorFn2 = () => util.defineClass('abc');
+    const throwErrorFn3 = () => util.defineClass(123);
+
+    // then
+    expect(throwErrorFn1).toThrow();
+    expect(throwErrorFn2).toThrow();
+    expect(throwErrorFn3).toThrow();
+  });
+
   test('생성자 함수 검사', () => {
     // given
     const ChildClass = util.defineClass(Child);
@@ -145,6 +157,26 @@ describe('부모 클래스를 상속한 인스턴스 생성', () => {
   });
 
   describe('매개변수를 전달하는 init 있는 경우', () => {
+    test('유효하지 않은 클래스 함수로 상속해서 클래스 함수 생성 시도하는 경우', () => {
+      // given
+      const ChildClass1 = util.defineClass(ChildWithInit, null);
+      const ChildClass2 = util.defineClass(ChildWithInit, 'abc');
+      const ChildClass3 = util.defineClass(ChildWithInit, 123);
+
+      // when
+      const instance1 = new ChildClass1();
+      const instance2 = new ChildClass2();
+      const instance3 = new ChildClass3();
+
+      // then
+      expect(instance1 instanceof ChildWithInit.init).toBeTruthy();
+      expect(instance1 instanceof ParentWithInit.init).toBeFalsy();
+      expect(instance2 instanceof ChildWithInit.init).toBeTruthy();
+      expect(instance2 instanceof ParentWithInit.init).toBeFalsy();
+      expect(instance3 instanceof ChildWithInit.init).toBeTruthy();
+      expect(instance3 instanceof ParentWithInit.init).toBeFalsy();
+    });
+
     test('instance type 검사', () => {
       // given;
       const ParentClass = util.defineClass(ParentWithInit);

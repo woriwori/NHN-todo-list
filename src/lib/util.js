@@ -37,6 +37,8 @@ function makeClass(properties) {
 
 const util = {
   defineClass(Child, ParentClass) {
+    if (!Child || !isObject(Child)) throw Error('올바른 객체를 전달하세요.');
+
     if (!ParentClass || !isFunction(ParentClass)) {
       return makeClass(Child);
     }
