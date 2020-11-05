@@ -31,6 +31,24 @@ function finish(event) {
   const belowElements = document.elementsFromPoint(clientX, clientY);
   const dropzone = belowElements[1];
   dropzone.appendChild(originElement);
+  /**
+
+    이건 위에 미리 선언해놓고..
+    var event = document.createEvent('Event');
+
+    이건 ie 가 지원 못하는 버전이긴한데, 이걸 써야지 
+    {target : originElement, isContainer: false...} 를 넣을 수 있다. 
+    var event = new CustomEvent('build', { bubbles: true, detail: { name: 'wonhee', value: myTarget.innerText } });
+    
+    event.initEvent('drop', true, true);
+
+    dnd.dropzone(selector); 할 때는 ... 
+    selector 에다가 dropzone을 구분할 수 있는 속성을 넣어놔서 
+    belowElements에서 dropzone을 꺼내야한다.
+
+    꺼낸 dropzone에 이벤트를 발생시킨다.
+    dropzone.dispatchEvent(event);
+   */
   destroy();
 }
 
