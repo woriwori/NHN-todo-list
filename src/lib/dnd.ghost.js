@@ -10,6 +10,8 @@ let ghostShadow = null;
 let ghostWidth, ghostHeight;
 let dropzone = null;
 let isContain = false;
+let clickedLeft = 0;
+let clickedTop = 0;
 
 function getSize(element) {
   return {
@@ -25,13 +27,13 @@ function getPosition(element) {
   };
 }
 
-export async function make(selector) {
+export async function make(selector, x, y) {
   originElement = getElement(selector);
 
-  create().then(ready);
+  create(x, y).then(ready);
 }
 
-async function create() {
+async function create(x, y) {
   ghost = originElement.cloneNode(true);
   ghostShadow = originElement.cloneNode(true);
 
@@ -45,6 +47,10 @@ async function create() {
   ghostShadow.classList.add('dnd-none');
   ghostShadow.classList.add('dnd-shadow');
   originElement.classList.add('dnd-hidden-origin');
+
+  const {top, left} = getPosition(originElement);
+  clickedLeft = x - left;
+  clickedTop = y - top;
 }
 
 function ready() {
@@ -76,7 +82,7 @@ function finish(event) {
 function destroy() {
   originElement.classList.remove('dnd-hidden-origin');
   ghost.parentNode.removeChild(ghost);
-  ghostShadow.parentNode.removeChild(ghostShadow);
+  if (isElement(ghostShadow.parentNode)) ghostShadow.parentNode.removeChild(ghostShadow);
 
   ghost = null;
   ghostShadow = null;
@@ -86,11 +92,9 @@ function destroy() {
 }
 
 function setPosition(event) {
-  const {offsetLeft, offsetTop} = originElement;
   const {pageX, pageY} = event;
-
-  ghost.style.left = `${pageX - offsetLeft}px`;
-  ghost.style.top = `${pageY - offsetTop}px`;
+  ghost.style.left = `${pageX - clickedLeft}px`;
+  ghost.style.top = `${pageY - clickedTop}px`;
 
   const {top, left} = getPosition(ghost);
   const dropzoneTopLeft = getDropzone(left, top);
@@ -98,6 +102,7 @@ function setPosition(event) {
   isContain = isElement(dropzoneTopLeft) && isElement(dropzoneBottomRight) && dropzoneTopLeft === dropzoneBottomRight;
 
   if (isContain) {
+    // const draggableItem = getDraggableItem(left + ghostWidth/2, top + ghostHeight/2);
     dropzoneTopLeft.appendChild(ghostShadow);
     ghostShadow.classList.remove('dnd-none');
   } else {

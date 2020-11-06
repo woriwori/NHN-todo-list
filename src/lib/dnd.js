@@ -23,8 +23,8 @@ import * as ghost from '@/lib/dnd.ghost';
 
 const dnd = {
   draggable(selector) {
-    domutil.on(selector, 'mousedown', () => {
-      ghost.make(selector).then(ghost.execute);
+    domutil.on(selector, 'mousedown', (e) => {
+      ghost.make(selector, e.pageX, e.pageY).then(ghost.execute);
     });
   },
   dropzone(selector) {
