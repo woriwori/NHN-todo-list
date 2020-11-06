@@ -6,6 +6,23 @@ const ERROR_CODE = {
 };
 let originElement = null;
 let ghost = null;
+let ghostWidth, ghostHeight;
+let dropzone = null;
+let isContain = false;
+
+function getSize(element) {
+  return {
+    width: element.offsetWidth,
+    height: element.offsetHeight
+  };
+}
+
+function getPosition(element) {
+  return {
+    top: element.offsetTop,
+    left: element.offsetLeft
+  };
+}
 
 export async function make(selector) {
   originElement = getElement(selector);
@@ -18,6 +35,10 @@ async function create() {
 
   ghost.style.position = 'fixed';
   ghost.style.zIndex = 1000;
+
+  const {width, height} = getSize(originElement);
+  ghostWidth = width;
+  ghostHeight = height;
 
   originElement.classList.add('dnd-hidden-origin');
 }
@@ -35,7 +56,10 @@ export function execute() {
 }
 
 function finish(event) {
-  const dropzone = getDropzone(event);
+  if (!isContain) throw Error(ERROR_CODE.E01);
+
+  dropzone = getDropzone(event.clientX, event.clientY);
+
   const dropEvent = getDropEvent();
 
   dropzone.dispatchEvent(dropEvent);
@@ -50,6 +74,8 @@ function destroy() {
   ghost.parentNode.removeChild(ghost);
   ghost = null;
   originElement = null;
+  ghostWidth = null;
+  ghostHeight = null;
 }
 
 function setPosition(event) {
@@ -58,12 +84,16 @@ function setPosition(event) {
 
   ghost.style.left = `${pageX - offsetLeft}px`;
   ghost.style.top = `${pageY - offsetTop}px`;
+
+  const {top, left} = getPosition(ghost);
+  const dropzoneTopLeft = getDropzone(left, top);
+  const dropzoneBottomRight = getDropzone(left + ghostWidth, top + ghostHeight);
+  isContain = isElement(dropzoneTopLeft) && isElement(dropzoneBottomRight) && dropzoneTopLeft === dropzoneBottomRight;
 }
 
 function handleMouseUp(event) {
   document.removeEventListener('mousemove', setPosition);
   ghost.removeEventListener('mouseup', handleMouseUp);
-
   try {
     finish(event);
   } catch (error) {
@@ -72,16 +102,13 @@ function handleMouseUp(event) {
   }
 }
 
-function getDropzone(event) {
-  const {clientX, clientY} = event;
-  const belowElements = document.elementsFromPoint(clientX, clientY);
+function getDropzone(x, y) {
+  const belowElements = document.elementsFromPoint(x, y);
   const dropzone = belowElements.find((el) => el.getAttribute('dropzone') === 'true');
-
-  if (!isElement(dropzone)) throw Error(ERROR_CODE.E01);
 
   return dropzone;
 }
 
 function getDropEvent() {
-  return new CustomEvent('drop', {bubbles: false, detail: {target: originElement, isContain: true}});
+  return new CustomEvent('drop', {bubbles: false, detail: {target: originElement, isContain: isContain}});
 }
