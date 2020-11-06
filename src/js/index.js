@@ -17,5 +17,5 @@ document.querySelectorAll('.item').forEach((el) => dnd.draggable(el));
 const dropzone = dnd.dropzone('.list');
 
 domutil.on(dropzone, 'drop', (eventData) => {
-  console.log(eventData);
+  console.log('eventData : ', eventData.detail);
 });

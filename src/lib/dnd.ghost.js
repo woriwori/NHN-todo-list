@@ -1,4 +1,4 @@
-import {getElement, isElement} from '@/lib/helper';
+import {getElement, isElement, getSize, getPosition} from '@/lib/helper';
 import '@/styles/dnd.ghost.scss';
 
 const ERROR_CODE = {
@@ -13,20 +13,6 @@ let isContain = false;
 let clickedLeft = 0;
 let clickedTop = 0;
 
-function getSize(element) {
-  return {
-    width: element.offsetWidth,
-    height: element.offsetHeight
-  };
-}
-
-function getPosition(element) {
-  return {
-    top: element.offsetTop,
-    left: element.offsetLeft
-  };
-}
-
 export async function make(selector, x, y) {
   originElement = getElement(selector);
 
@@ -34,24 +20,33 @@ export async function make(selector, x, y) {
 }
 
 async function create(x, y) {
-  ghost = originElement.cloneNode(true);
-  ghostShadow = originElement.cloneNode(true);
-
-  ghost.style.position = 'fixed';
-  ghost.style.zIndex = 1000;
-
-  const {width, height} = getSize(originElement);
-  ghostWidth = width;
-  ghostHeight = height;
-
-  ghostShadow.classList.add('dnd-none');
-  ghostShadow.classList.add('dnd-shadow');
-  originElement.classList.add('dnd-hidden-origin');
-
   const {top, left} = getPosition(originElement);
   clickedLeft = x - left;
   clickedTop = y - top;
+
+  ghost = originElement.cloneNode(true);
+  ghostShadow = originElement.cloneNode(true);
+
+  initializeGhost();
+  initializeGhostShadow();
+
+  originElement.classList.add('dnd-hidden-origin');
 }
+
+function initializeGhost() {
+  const {width, height} = getSize(originElement);
+
+  ghostWidth = width;
+  ghostHeight = height;
+  ghost.classList.add('dnd-ghost');
+}
+
+function initializeGhostShadow() {
+  ghostShadow.classList.add('dnd-none');
+  ghostShadow.classList.add('dnd-shadow');
+}
+
+let debounce = null;
 
 function ready() {
   ghost.addEventListener('mousedown', () => {
@@ -74,7 +69,7 @@ function finish(event) {
 
   dropzone.dispatchEvent(dropEvent);
 
-  dropzone.appendChild(originElement);
+  dropzone.replaceChild(originElement, ghostShadow);
 
   destroy();
 }
@@ -91,6 +86,9 @@ function destroy() {
   ghostHeight = null;
 }
 
+function insertAfter(newNode, referenceNode) {
+  referenceNode.parentNode.insertBefore(newNode, referenceNode.nextElementSibling);
+}
 function setPosition(event) {
   const {pageX, pageY} = event;
   ghost.style.left = `${pageX - clickedLeft}px`;
@@ -98,12 +96,25 @@ function setPosition(event) {
 
   const {top, left} = getPosition(ghost);
   const dropzoneTopLeft = getDropzone(left, top);
-  const dropzoneBottomRight = getDropzone(left + ghostWidth, top + ghostHeight);
+  const dropzoneBottomRight = getDropzone(left + ghostWidth, top + ghostHeight - 5);
   isContain = isElement(dropzoneTopLeft) && isElement(dropzoneBottomRight) && dropzoneTopLeft === dropzoneBottomRight;
 
   if (isContain) {
-    // const draggableItem = getDraggableItem(left + ghostWidth/2, top + ghostHeight/2);
-    dropzoneTopLeft.appendChild(ghostShadow);
+    clearTimeout(debounce);
+    debounce = setTimeout(() => {
+      const draggableItem = getDraggableItem(left + ghostWidth / 2, top + ghostHeight / 2);
+      if (isElement(draggableItem)) {
+        const draggableItemTop = getPosition(draggableItem).top;
+        if (draggableItemTop <= top) insertAfter(ghostShadow, draggableItem);
+        else dropzoneTopLeft.insertBefore(ghostShadow, draggableItem);
+      } else {
+        const dropzonePosition = getPosition(dropzoneTopLeft);
+        const dropzoneTop = dropzonePosition.top;
+        const dropzoneBottom = dropzonePosition.top + getSize(dropzoneTopLeft).height;
+        if (Math.abs(dropzoneTop - top) < Math.abs(dropzoneBottom - top)) dropzoneTopLeft.prepend(ghostShadow);
+        else dropzoneTopLeft.append(ghostShadow);
+      }
+    }, 200);
     ghostShadow.classList.remove('dnd-none');
   } else {
     // 한번이라도 append 된 적 있어야 parentNode가 존재
@@ -129,7 +140,15 @@ function getDropzone(x, y) {
 
   return dropzone;
 }
+function getDraggableItem(x, y) {
+  const belowElements = document.elementsFromPoint(x, y);
+  const dropzone = belowElements
+    .slice(1)
+    .find((el) => el.getAttribute('dnd-draggable') === 'true' && el !== ghostShadow);
+
+  return dropzone;
+}
 
 function getDropEvent() {
-  return new CustomEvent('drop', {bubbles: false, detail: {target: originElement, isContain: isContain}});
+  return new CustomEvent('drop', {bubbles: false, detail: {target: originElement, isContain}});
 }
