@@ -6,6 +6,7 @@ const ERROR_CODE = {
 };
 let originElement = null;
 let ghost = null;
+let ghostShadow = null;
 let ghostWidth, ghostHeight;
 let dropzone = null;
 let isContain = false;
@@ -32,6 +33,7 @@ export async function make(selector) {
 
 async function create() {
   ghost = originElement.cloneNode(true);
+  ghostShadow = originElement.cloneNode(true);
 
   ghost.style.position = 'fixed';
   ghost.style.zIndex = 1000;
@@ -40,6 +42,8 @@ async function create() {
   ghostWidth = width;
   ghostHeight = height;
 
+  ghostShadow.classList.add('dnd-none');
+  ghostShadow.classList.add('dnd-shadow');
   originElement.classList.add('dnd-hidden-origin');
 }
 
@@ -72,7 +76,10 @@ function finish(event) {
 function destroy() {
   originElement.classList.remove('dnd-hidden-origin');
   ghost.parentNode.removeChild(ghost);
+  ghostShadow.parentNode.removeChild(ghostShadow);
+
   ghost = null;
+  ghostShadow = null;
   originElement = null;
   ghostWidth = null;
   ghostHeight = null;
@@ -89,6 +96,14 @@ function setPosition(event) {
   const dropzoneTopLeft = getDropzone(left, top);
   const dropzoneBottomRight = getDropzone(left + ghostWidth, top + ghostHeight);
   isContain = isElement(dropzoneTopLeft) && isElement(dropzoneBottomRight) && dropzoneTopLeft === dropzoneBottomRight;
+
+  if (isContain) {
+    dropzoneTopLeft.appendChild(ghostShadow);
+    ghostShadow.classList.remove('dnd-none');
+  } else {
+    ghostShadow.parentNode.removeChild(ghostShadow);
+    ghostShadow.classList.add('dnd-none');
+  }
 }
 
 function handleMouseUp(event) {

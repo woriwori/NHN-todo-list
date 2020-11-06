@@ -1,3 +1,10 @@
 .dnd-hidden-origin {
   visibility: hidden;
 }
+.dnd-none {
+  display: none;
+}
+.dnd-shadow {
+  z-index: 0;
+  opacity: 0.7 !important;
+}
