@@ -1,21 +1,29 @@
-import {getElement} from '@/lib/helper';
+import {getElement, isElement} from '@/lib/helper';
 
+const ERROR_CODE = {
+  E01: 'dropzone이 아닙니다.'
+};
 let originElement = null;
 let ghost = null;
 
 export async function make(selector) {
   originElement = getElement(selector);
+
   create().then(ready);
 }
 
 async function create() {
   ghost = originElement.cloneNode(true);
+
   ghost.style.position = 'fixed';
   ghost.style.zIndex = 1000;
+
+  // TODO: originElement는 흐릿하게하던가 아니면 색깔을 주던가..
+  // originElement.classList.add('dnd-hidden-origin');
 }
 
 function ready() {
-  ghost.addEventListener('mousedown', (event) => {
+  ghost.addEventListener('mousedown', () => {
     document.body.append(ghost);
     document.addEventListener('mousemove', setPosition);
     ghost.addEventListener('mouseup', handleMouseUp);
@@ -27,28 +35,14 @@ export function execute() {
 }
 
 function finish(event) {
-  const {clientX, clientY} = event;
-  const belowElements = document.elementsFromPoint(clientX, clientY);
-  const dropzone = belowElements[1];
+  const dropzone = getDropzone(event);
+  const dropEvent = getDropEvent();
+
+  dropzone.dispatchEvent(dropEvent);
+
+  // originElement.classList.remove('dnd-hidden-origin');
   dropzone.appendChild(originElement);
-  /**
 
-    이건 위에 미리 선언해놓고..
-    var event = document.createEvent('Event');
-
-    이건 ie 가 지원 못하는 버전이긴한데, 이걸 써야지 
-    {target : originElement, isContainer: false...} 를 넣을 수 있다. 
-    var event = new CustomEvent('build', { bubbles: true, detail: { name: 'wonhee', value: myTarget.innerText } });
-    
-    event.initEvent('drop', true, true);
-
-    dnd.dropzone(selector); 할 때는 ... 
-    selector 에다가 dropzone을 구분할 수 있는 속성을 넣어놔서 
-    belowElements에서 dropzone을 꺼내야한다.
-
-    꺼낸 dropzone에 이벤트를 발생시킨다.
-    dropzone.dispatchEvent(event);
-   */
   destroy();
 }
 
@@ -61,6 +55,7 @@ function destroy() {
 function setPosition(event) {
   const {offsetLeft, offsetTop} = originElement;
   const {pageX, pageY} = event;
+
   ghost.style.left = `${pageX - offsetLeft}px`;
   ghost.style.top = `${pageY - offsetTop}px`;
 }
@@ -69,5 +64,24 @@ function handleMouseUp(event) {
   document.removeEventListener('mousemove', setPosition);
   ghost.removeEventListener('mouseup', handleMouseUp);
 
-  finish(event);
+  try {
+    finish(event);
+  } catch (error) {
+    // console.log(error);
+    if (error.message === ERROR_CODE.E01) destroy();
+  }
+}
+
+function getDropzone(event) {
+  const {clientX, clientY} = event;
+  const belowElements = document.elementsFromPoint(clientX, clientY);
+  const dropzone = belowElements.find((el) => el.getAttribute('dropzone') === 'true');
+
+  if (!isElement(dropzone)) throw Error(ERROR_CODE.E01);
+
+  return dropzone;
+}
+
+function getDropEvent() {
+  return new CustomEvent('drop', {bubbles: false, detail: {target: originElement, isContain: true}});
 }

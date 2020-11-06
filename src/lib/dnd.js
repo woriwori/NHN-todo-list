@@ -1,3 +1,4 @@
+import {getElement} from '@/lib/helper';
 import * as domutil from '@/lib/domutil';
 import * as ghost from '@/lib/dnd.ghost';
 /*
@@ -26,7 +27,13 @@ const dnd = {
       ghost.make(selector).then(ghost.execute);
     });
   },
-  dropzone(selector) {}
+  dropzone(selector) {
+    const element = getElement(selector);
+
+    element.setAttribute('dropzone', true);
+
+    return element;
+  }
 };
 
 export default dnd;
