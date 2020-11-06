@@ -25,7 +25,7 @@ const dnd = {
   draggable(selector) {
     selector.setAttribute('dnd-draggable', true);
     domutil.on(selector, 'mousedown', (e) => {
-      ghost.make(selector, e.pageX, e.pageY).then(ghost.execute);
+      ghost.make(selector, e.pageX, e.pageY);
     });
   },
   dropzone(selector) {

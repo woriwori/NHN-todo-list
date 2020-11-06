@@ -13,7 +13,12 @@ export const getElement = (selector) => {
 
 export const getSize = ({offsetWidth, offsetHeight}) => ({width: offsetWidth, height: offsetHeight});
 export const getPosition = ({offsetTop, offsetLeft}) => ({top: offsetTop, left: offsetLeft});
+export const insertNodeAfter = (newNode, referenceNode) =>
+  referenceNode.parentNode.insertBefore(newNode, referenceNode.nextElementSibling);
+export const insertNodeBefore = (newNode, referenceNode) =>
+  referenceNode.parentNode.insertBefore(newNode, referenceNode);
 export const isElement = (v) => v instanceof Element;
+export const isElements = (...args) => args.every((v) => v instanceof Element);
 export const isWindow = (v) => v === window;
 export const isString = (v) => typeof v === 'string';
 export const isEmptyString = (v) => v === '';
