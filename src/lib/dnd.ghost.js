@@ -101,7 +101,8 @@ function setPosition(event) {
     dropzoneTopLeft.appendChild(ghostShadow);
     ghostShadow.classList.remove('dnd-none');
   } else {
-    ghostShadow.parentNode.removeChild(ghostShadow);
+    // 한번이라도 append 된 적 있어야 parentNode가 존재
+    if (isElement(ghostShadow.parentNode)) ghostShadow.parentNode.removeChild(ghostShadow);
     ghostShadow.classList.add('dnd-none');
   }
 }
