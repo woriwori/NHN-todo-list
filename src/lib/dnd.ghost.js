@@ -1,4 +1,5 @@
 import {getElement, isElement} from '@/lib/helper';
+import '@/styles/dnd.ghost.scss';
 
 const ERROR_CODE = {
   E01: 'dropzone이 아닙니다.'
@@ -18,8 +19,7 @@ async function create() {
   ghost.style.position = 'fixed';
   ghost.style.zIndex = 1000;
 
-  // TODO: originElement는 흐릿하게하던가 아니면 색깔을 주던가..
-  // originElement.classList.add('dnd-hidden-origin');
+  originElement.classList.add('dnd-hidden-origin');
 }
 
 function ready() {
@@ -40,13 +40,13 @@ function finish(event) {
 
   dropzone.dispatchEvent(dropEvent);
 
-  // originElement.classList.remove('dnd-hidden-origin');
   dropzone.appendChild(originElement);
 
   destroy();
 }
 
 function destroy() {
+  originElement.classList.remove('dnd-hidden-origin');
   ghost.parentNode.removeChild(ghost);
   ghost = null;
   originElement = null;
