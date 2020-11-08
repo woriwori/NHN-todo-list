@@ -11,8 +11,6 @@ export const getElement = (selector) => {
   return element;
 };
 
-export const getSize = ({offsetWidth, offsetHeight}) => ({width: offsetWidth, height: offsetHeight});
-export const getPosition = ({offsetTop, offsetLeft}) => ({top: offsetTop, left: offsetLeft});
 export const insertNodeAfter = (newNode, referenceNode) =>
   referenceNode.parentNode.insertBefore(newNode, referenceNode.nextElementSibling);
 export const insertNodeBefore = (newNode, referenceNode) =>

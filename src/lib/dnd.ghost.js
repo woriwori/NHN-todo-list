@@ -1,4 +1,4 @@
-import {getElement, isElement, getSize, getPosition, isElements, insertNodeAfter, insertNodeBefore} from '@/lib/helper';
+import {getElement, isElement, isElements, insertNodeAfter, insertNodeBefore} from '@/lib/helper';
 import '@/styles/dnd.ghost.scss';
 
 const ERROR_CODE = {
@@ -9,8 +9,6 @@ let clickedLeft = 0;
 let clickedTop = 0;
 let originElement = null;
 let ghost = null;
-let ghostWidth = 0;
-let ghostHeight = 0;
 let ghostShadow = null;
 let isContain = false;
 
@@ -21,7 +19,7 @@ export function make(selector, x, y) {
 async function create(selector, x, y) {
   originElement = getElement(selector);
 
-  const {top, left} = getPosition(originElement);
+  const {top, left} = originElement.getBoundingClientRect();
   clickedLeft = x - left;
   clickedTop = y - top;
 
@@ -70,10 +68,6 @@ function destroy() {
 }
 
 function initializeGhost() {
-  const {width, height} = getSize(originElement);
-
-  ghostWidth = width;
-  ghostHeight = height;
   ghost.classList.add('dnd-ghost');
 }
 
@@ -99,9 +93,9 @@ function setPosition(event) {
   ghost.style.left = `${pageX - clickedLeft}px`;
   ghost.style.top = `${pageY - clickedTop}px`;
 
-  const {top, left} = getPosition(ghost);
+  const {top, left, width, height} = ghost.getBoundingClientRect();
   const belowGhostTopLeft = getDropzone(left, top);
-  const belowGhostBottomRight = getDropzone(left + ghostWidth, top + ghostHeight - 5);
+  const belowGhostBottomRight = getDropzone(left + width, top + height - 5);
 
   isContain = isElements(belowGhostTopLeft, belowGhostBottomRight) && belowGhostTopLeft === belowGhostBottomRight;
 
@@ -114,7 +108,7 @@ function setPosition(event) {
     debounce = setTimeout(() => {
       const dropzone = belowGhostTopLeft;
 
-      const item = getDraggableItem(left + ghostWidth / 2, top + ghostHeight / 2);
+      const item = getDraggableItem(left + width / 2, top + height / 2);
 
       if (isElement(item)) {
         // draggable 요소의 앞 또는 뒤
@@ -174,26 +168,12 @@ function hideGhost() {
 }
 
 function insertBetweenDraggableItems(item, top) {
-  const itemTop = getPosition(item).top;
+  const itemTop = item.getBoundingClientRect().top;
 
   if (itemTop <= top) {
-    console.log('밑!! : ', item.innerHTML);
     insertNodeAfter(ghostShadow, item);
   } else {
-    console.log('위!! : ', item.innerHTML);
-
     insertNodeBefore(ghostShadow, item);
-  }
-}
-
-function insertIntoDropzone(dropzone, top) {
-  const dropzoneTop = getPosition(dropzone).top;
-  const dropzoneBottom = dropzoneTop + getSize(dropzone).height;
-
-  if (Math.abs(dropzoneTop - top) < Math.abs(dropzoneBottom - top)) {
-    dropzone.prepend(ghostShadow);
-  } else {
-    dropzone.append(ghostShadow);
   }
 }
 
@@ -206,12 +186,9 @@ function getDropzone(x, y) {
 
 function getDraggableItem(x, y) {
   const belowElements = document.elementsFromPoint(x, y);
-  console.log(belowElements);
   const draggableItem = belowElements.find(
     (el) => el.getAttribute('dnd-draggable') === 'true' && el !== ghostShadow && el !== ghost
   );
-  console.log(draggableItem);
-  console.log('-------------------------');
   return draggableItem;
 }
 
