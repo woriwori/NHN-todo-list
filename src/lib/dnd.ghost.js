@@ -123,7 +123,7 @@ function setPosition(event) {
         if (len < 2) {
           child = children[i] || null;
           childRect = child && child.getBoundingClientRect();
-          if (childRect && childRect.top < top) dropzone.prepend(ghostShadow);
+          if (childRect && childRect.top > top) dropzone.prepend(ghostShadow);
           else dropzone.append(ghostShadow);
           hideGhost();
           return;
