@@ -1,6 +1,7 @@
 import dnd from '@/lib/dnd';
 import * as domutil from '@/lib/domutil';
 import '@/styles/index.scss';
+
 const str = `
     <div class="item">1</div>   
     <div class="item">2</div>   
@@ -15,7 +16,6 @@ const str = `
 `;
 document.body.innerHTML = str;
 
-// dnd.draggable('.item');
 document.querySelectorAll('.item').forEach((el) => dnd.draggable(el));
 
 const dropzone = dnd.dropzone('.list');
