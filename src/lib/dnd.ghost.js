@@ -110,18 +110,51 @@ function setPosition(event) {
     if (isElement(ghostShadow.parentNode)) ghostShadow.parentNode.removeChild(ghostShadow);
     ghostShadow.classList.add('dnd-none');
   } else {
-    const dropzone = belowGhostTopLeft;
-
     clearTimeout(debounce);
     debounce = setTimeout(() => {
+      const dropzone = belowGhostTopLeft;
+
       const item = getDraggableItem(left + ghostWidth / 2, top + ghostHeight / 2);
 
       if (isElement(item)) {
         // draggable 요소의 앞 또는 뒤
         insertBetweenDraggableItems(item, top);
       } else {
-        // dropzone 내에서의 맨 앞 또는 뒤
-        insertIntoDropzone(dropzone, top);
+        // draggable 요소 사이에 공백이 있어서 draggable item이 안 잡히는 경우 모든 item을 확인
+        const children = dropzone.children;
+        const len = children.length;
+
+        let i = 0;
+        let child, childRect;
+        if (len < 2) {
+          child = children[i] || null;
+          childRect = child && child.getBoundingClientRect();
+          if (childRect && childRect.top < top) dropzone.prepend(ghostShadow);
+          else dropzone.append(ghostShadow);
+          hideGhost();
+          return;
+        }
+
+        let nextChild, nextChildRect;
+        for (i = 1; i < len; i++) {
+          child = children[i];
+          childRect = child.getBoundingClientRect();
+          if (childRect.top > top) {
+            dropzone.prepend(ghostShadow);
+            break;
+          }
+
+          nextChild = children[i + 1] || null;
+          nextChildRect = nextChild ? nextChild.getBoundingClientRect() : null;
+          if (!nextChildRect) {
+            dropzone.append(ghostShadow);
+            break;
+          }
+          if (childRect.bottom <= top && nextChildRect.top > top) {
+            insertNodeAfter(ghostShadow, child);
+            break;
+          }
+        }
       }
 
       // drag할 위치가 drag하려는 요소의 원래 위치가 같으면 preview(ghost) 숨김
@@ -144,8 +177,11 @@ function insertBetweenDraggableItems(item, top) {
   const itemTop = getPosition(item).top;
 
   if (itemTop <= top) {
+    console.log('밑!! : ', item.innerHTML);
     insertNodeAfter(ghostShadow, item);
   } else {
+    console.log('위!! : ', item.innerHTML);
+
     insertNodeBefore(ghostShadow, item);
   }
 }
@@ -170,10 +206,12 @@ function getDropzone(x, y) {
 
 function getDraggableItem(x, y) {
   const belowElements = document.elementsFromPoint(x, y);
+  console.log(belowElements);
   const draggableItem = belowElements.find(
     (el) => el.getAttribute('dnd-draggable') === 'true' && el !== ghostShadow && el !== ghost
   );
-
+  console.log(draggableItem);
+  console.log('-------------------------');
   return draggableItem;
 }
 
