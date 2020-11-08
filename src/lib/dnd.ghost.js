@@ -94,65 +94,62 @@ function setPosition(event) {
   ghost.style.top = `${pageY - clickedTop}px`;
 
   const {top, left, width, height} = ghost.getBoundingClientRect();
-  const belowGhostTopLeft = getDropzone(left, top);
-  const belowGhostBottomRight = getDropzone(left + width, top + height - 5);
 
-  isContain = isElements(belowGhostTopLeft, belowGhostBottomRight) && belowGhostTopLeft === belowGhostBottomRight;
-
-  if (!isContain) {
+  if (!isConatinGhost()) {
     hideGhostShadow();
-  } else {
-    clearTimeout(debounce);
-    debounce = setTimeout(() => {
-      const dropzone = belowGhostTopLeft;
+    return;
+  }
 
-      const item = getDraggableItem(left + width / 2, top + height / 2);
+  clearTimeout(debounce);
+  debounce = setTimeout(() => {
+    const dropzone = getDropzone(left, top);
 
-      if (isElement(item)) {
-        // draggable 요소의 앞 또는 뒤
-        insertBetweenDraggableItems(item, top);
-      } else {
-        // draggable 요소 사이에 공백이 있어서 draggable item이 안 잡히는 경우 모든 item을 확인
-        const children = dropzone.children;
-        const len = children.length;
+    const item = getDraggableItem(left + width / 2, top + height / 2);
 
-        let i = 0;
-        let child, childRect;
-        if (len < 2) {
-          child = children[i] || null;
-          childRect = child && child.getBoundingClientRect();
-          if (childRect && childRect.top > top) dropzone.prepend(ghostShadow);
-          else dropzone.append(ghostShadow);
-          hideGhost();
-          return;
-        }
+    if (isElement(item)) {
+      // draggable 요소의 앞 또는 뒤
+      insertBetweenDraggableItems(item, top);
+    } else {
+      // draggable 요소 사이에 공백이 있어서 draggable item이 안 잡히는 경우 모든 item을 확인
+      const children = dropzone.children;
+      const len = children.length;
 
-        let nextChild, nextChildRect;
-        for (i = 1; i < len; i++) {
-          child = children[i];
-          childRect = child.getBoundingClientRect();
-          if (childRect.top > top) {
-            dropzone.prepend(ghostShadow);
-            break;
-          }
-
-          nextChild = children[i + 1] || null;
-          nextChildRect = nextChild ? nextChild.getBoundingClientRect() : null;
-          if (!nextChildRect) {
-            dropzone.append(ghostShadow);
-            break;
-          }
-          if (childRect.bottom <= top && nextChildRect.top > top) {
-            insertNodeAfter(ghostShadow, child);
-            break;
-          }
-        }
+      let i = 0;
+      let child, childRect;
+      if (len < 2) {
+        child = children[i] || null;
+        childRect = child && child.getBoundingClientRect();
+        if (childRect && childRect.top > top) dropzone.prepend(ghostShadow);
+        else dropzone.append(ghostShadow);
+        hideGhost();
+        return;
       }
 
-      // drag할 위치가 drag하려는 요소의 원래 위치가 같으면 preview(ghost) 숨김
-      hideGhost();
-    }, 200);
-  }
+      let nextChild, nextChildRect;
+      for (i = 1; i < len; i++) {
+        child = children[i];
+        childRect = child.getBoundingClientRect();
+        if (childRect.top > top) {
+          dropzone.prepend(ghostShadow);
+          break;
+        }
+
+        nextChild = children[i + 1] || null;
+        nextChildRect = nextChild ? nextChild.getBoundingClientRect() : null;
+        if (!nextChildRect) {
+          dropzone.append(ghostShadow);
+          break;
+        }
+        if (childRect.bottom <= top && nextChildRect.top > top) {
+          insertNodeAfter(ghostShadow, child);
+          break;
+        }
+      }
+    }
+
+    // drag할 위치가 drag하려는 요소의 원래 위치가 같으면 preview(ghost) 숨김
+    hideGhost();
+  }, 200);
 }
 
 function hideGhost() {
@@ -169,6 +166,16 @@ function hideGhostShadow() {
   // 한번이라도 dropzone에 append 된 적 있어야 parentNode(dropzone)가 존재
   if (isElement(ghostShadow.parentNode)) ghostShadow.parentNode.removeChild(ghostShadow);
   ghostShadow.classList.add('dnd-none');
+}
+
+function isConatinGhost() {
+  const {top, left, width, height} = ghost.getBoundingClientRect();
+  const belowGhostTopLeft = getDropzone(left, top);
+  const belowGhostBottomRight = getDropzone(left + width, top + height - 5);
+
+  isContain = isElements(belowGhostTopLeft, belowGhostBottomRight) && belowGhostTopLeft === belowGhostBottomRight;
+
+  return isContain;
 }
 
 function insertBetweenDraggableItems(item, top) {
