@@ -1,28 +1,14 @@
-import {getElement} from '@/lib/helper';
+import {getElement, isString, isEmptyString} from '@/lib/helper';
 import * as domutil from '@/lib/domutil';
 import * as ghost from '@/lib/dnd.ghost';
-/*
-<div id="dnd1"></div>
-<div id="dnd2"></div>
-<div class="my-dnd"></div>
-<div class="my-dnd"></div>
-<div id="drop1"></div>
-<div id="drop2"></div>
-(function() {
-    dnd.draggable('#dnd1');
-    dnd.draggable('.my-dnd');    // 2개 엘리먼트 처리
-    var dropzone1 = dnd.dropzone('#drop1');    // Dropzone은 인스턴스를 반환하고 한번에 하나의 dropzone을 생성할 수 있다.
-    var dropzone2 = dnd.dropzone('#drop2');
-    
-    dropzone1.on('drop', function(eventData) {
-        console.log(eventData.target);    // 드롭 된 엘리먼트
-        console.log(eventData.isContain);    // 완전 포함 여부
-    });
-})();
-*/
 
 const dnd = {
   draggable(selector) {
+    const dropzoneAttr = selector.getAttribute('dropzone');
+    if (isString(dropzoneAttr) && !isEmptyString(dropzoneAttr)) {
+      throw Error('dropzone 요소에는 draggable을 설정할 수 없습니다.');
+    }
+
     selector.setAttribute('dnd-draggable', true);
     domutil.on(selector, 'mousedown', (e) => {
       ghost.make(selector, e.pageX, e.pageY);
@@ -30,6 +16,11 @@ const dnd = {
   },
   dropzone(selector) {
     const element = getElement(selector);
+
+    const draggableAttr = element.getAttribute('dnd-draggable');
+    if (isString(draggableAttr) && !isEmptyString(draggableAttr)) {
+      throw Error('draggable 요소에는 dropzone을 설정할 수 없습니다.');
+    }
 
     element.setAttribute('dropzone', true);
 
