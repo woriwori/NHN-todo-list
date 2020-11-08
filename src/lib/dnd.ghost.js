@@ -105,49 +105,53 @@ function setPosition(event) {
     const dropzone = getDropzone(left, top);
 
     const item = getDraggableItem(left + width / 2, top + height / 2);
-
     if (isElement(item)) {
-      // draggable 요소의 앞 또는 뒤
+      // draggable 요소의 앞 또는 뒤에 추가
       insertBetweenDraggableItems(item, top);
-    } else {
-      // draggable 요소 사이에 공백이 있어서 draggable item이 안 잡히는 경우 모든 item을 확인
-      const children = dropzone.children;
-      const len = children.length;
 
-      let i = 0;
-      let child, childRect;
-      if (len < 2) {
-        child = children[i] || null;
-        childRect = child && child.getBoundingClientRect();
-        if (childRect && childRect.top > top) dropzone.prepend(ghostShadow);
-        else dropzone.append(ghostShadow);
-        hideGhost();
-        return;
-      }
-
-      let nextChild, nextChildRect;
-      for (i = 1; i < len; i++) {
-        child = children[i];
-        childRect = child.getBoundingClientRect();
-        if (childRect.top > top) {
-          dropzone.prepend(ghostShadow);
-          break;
-        }
-
-        nextChild = children[i + 1] || null;
-        nextChildRect = nextChild ? nextChild.getBoundingClientRect() : null;
-        if (!nextChildRect) {
-          dropzone.append(ghostShadow);
-          break;
-        }
-        if (childRect.bottom <= top && nextChildRect.top > top) {
-          insertNodeAfter(ghostShadow, child);
-          break;
-        }
-      }
+      // drag할 위치가 drag하려는 요소의 원래 위치가 같으면 preview(ghost) 숨김
+      hideGhost();
+      return;
     }
 
-    // drag할 위치가 drag하려는 요소의 원래 위치가 같으면 preview(ghost) 숨김
+    // draggable 요소 사이에 공백이 있어서 draggable item이 안 잡히는 경우 모든 item을 확인
+    const children = dropzone.children;
+    const len = children.length;
+
+    let child, childRect;
+    if (len < 2) {
+      child = children[0] || null;
+      childRect = child && child.getBoundingClientRect();
+
+      if (childRect && childRect.top > top) dropzone.prepend(ghostShadow);
+      else dropzone.append(ghostShadow);
+
+      hideGhost();
+      return;
+    }
+
+    let i, nextChild, nextChildRect;
+    for (i = 1; i < len; i++) {
+      child = children[i];
+
+      childRect = child.getBoundingClientRect();
+      if (childRect.top > top) {
+        dropzone.prepend(ghostShadow);
+        break;
+      }
+
+      nextChild = children[i + 1] || null;
+      if (!nextChild) {
+        dropzone.append(ghostShadow);
+        break;
+      }
+
+      nextChildRect = nextChild.getBoundingClientRect();
+      if (childRect.bottom <= top && nextChildRect.top > top) {
+        insertNodeAfter(ghostShadow, child);
+        break;
+      }
+    }
     hideGhost();
   }, 200);
 }
@@ -203,14 +207,6 @@ function getDraggableItem(x, y) {
   return draggableItem;
 }
 
-function getDropEvent() {
-  return new CustomEvent('drop', {bubbles: false, detail: {target: originElement, isContain}});
-}
-
-function isOriginElement(element) {
-  return isElement(element) && element.classList.contains('dnd-hidden-origin');
-}
-
-function clone(element) {
-  return element.cloneNode(true);
-}
+const getDropEvent = () => new CustomEvent('drop', {bubbles: false, detail: {target: originElement, isContain}});
+const isOriginElement = (element) => isElement(element) && element.classList.contains('dnd-hidden-origin');
+const clone = (element) => element.cloneNode(true);
