@@ -100,9 +100,7 @@ function setPosition(event) {
   isContain = isElements(belowGhostTopLeft, belowGhostBottomRight) && belowGhostTopLeft === belowGhostBottomRight;
 
   if (!isContain) {
-    // 한번이라도 dropzone에 append 된 적 있어야 parentNode(dropzone)가 존재
-    if (isElement(ghostShadow.parentNode)) ghostShadow.parentNode.removeChild(ghostShadow);
-    ghostShadow.classList.add('dnd-none');
+    hideGhostShadow();
   } else {
     clearTimeout(debounce);
     debounce = setTimeout(() => {
@@ -165,6 +163,12 @@ function hideGhost() {
   } else {
     if (!classList.contains('dnd-none')) classList.add('dnd-none');
   }
+}
+
+function hideGhostShadow() {
+  // 한번이라도 dropzone에 append 된 적 있어야 parentNode(dropzone)가 존재
+  if (isElement(ghostShadow.parentNode)) ghostShadow.parentNode.removeChild(ghostShadow);
+  ghostShadow.classList.add('dnd-none');
 }
 
 function insertBetweenDraggableItems(item, top) {
