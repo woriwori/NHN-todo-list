@@ -24,6 +24,9 @@ export default class HeaderView {
         this.vm.updateViewType(type);
         break;
       case 'remove':
+        if (confirm('완료된 항목을 모두 삭제하시겠습니까?')) {
+          this.vm.removeCompletedTodo();
+        }
         break;
     }
   }

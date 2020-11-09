@@ -26,9 +26,17 @@ export default class todoViewModel extends ViewModel {
     items.push({
       id: new Date().valueOf() + '',
       content,
-      done: false,
+      done: true,
       timestamp: new Date().valueOf()
     });
+    this.proxy.todoList = {
+      items,
+      length: items.length
+    };
+  }
+  removeCompletedTodo() {
+    let {items} = this.proxy.todoList;
+    items = items.filter((todo) => !todo.done);
     this.proxy.todoList = {
       items,
       length: items.length
