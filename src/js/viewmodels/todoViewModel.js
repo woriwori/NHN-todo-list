@@ -21,13 +21,24 @@ export default class todoViewModel extends ViewModel {
   }
 
   // data CRUD
-  addItem(content) {
+  addTodo(content) {
     const {items} = this.proxy.todoList;
     items.push({
       id: new Date().valueOf() + '',
       content,
       done: false,
       timestamp: new Date().valueOf()
+    });
+    this.proxy.todoList = {
+      items,
+      length: items.length
+    };
+  }
+  updateTodo(id, done) {
+    let {items} = this.proxy.todoList;
+    items = items.map((todo) => {
+      if (todo.id === id) todo.done = done;
+      return todo;
     });
     this.proxy.todoList = {
       items,

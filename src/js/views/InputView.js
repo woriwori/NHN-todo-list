@@ -17,7 +17,7 @@ export default class InputView {
   }
   inputHandler(e) {
     if (e.keyCode === 13) {
-      this.vm.addItem(e.target.value.trim());
+      this.vm.addTodo(e.target.value.trim());
       e.target.value = ''; // clear
     }
   }
