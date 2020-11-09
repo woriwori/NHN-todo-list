@@ -1,4 +1,5 @@
 import {InputView, HeaderView, ListView} from '@/js/views/index';
+import todoViewModel from '@/js/viewmodels/todoViewModel';
 import {getElement, setHTML} from '@/lib/helper';
 import '@/styles/todo-list/app.scss';
 
@@ -13,7 +14,7 @@ export default class App {
     const header = getElement('#header');
     const list = getElement('#list');
 
-    new InputView(null, input).render();
+    new InputView(new todoViewModel(), input).render();
     new HeaderView(null, header).render();
     new ListView(null, list).render();
   }
