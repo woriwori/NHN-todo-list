@@ -23,3 +23,4 @@ export const isEmptyString = (v) => v === '';
 export const isFunction = (v) => typeof v === 'function';
 export const isObject = (v) => Object.prototype.toString.call(v) === '[object Object]';
 export const isNull = (v) => v === null;
+export const setHTML = (target, template) => (target.innerHTML = template);
