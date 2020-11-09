@@ -1,4 +1,5 @@
 import * as domutil from '@/lib/domutil';
+import dnd from '@/lib/dnd';
 import {setHTML} from '@/lib/helper';
 import '@/styles/todo-list/list.scss';
 
@@ -14,14 +15,21 @@ export default class ListView {
   // event binding
   bindEvent() {
     domutil.on('.todo-list', 'click', this.clickHandler.bind(this));
+
+    const dropzone = dnd.dropzone('.todo-list');
+    domutil.on(dropzone, 'drop', this.dropHandler.bind(this));
+    dnd.draggable('.item');
   }
   clickHandler(e) {
     const el = e.target;
     if (el.classList.contains('check')) {
-      const todoId = el.getAttribute('data-id');
+      const todoId = el.parentNode.getAttribute('data-id');
       const checked = el.checked;
       this.vm.updateTodo(todoId, checked);
     }
+  }
+  dropHandler(e) {
+    console.dir(e);
   }
 
   // update view
@@ -43,9 +51,7 @@ export default class ListView {
 
     return `
     <div class="todo-list">
-      <div class="scroll">
         ${itemsTemplate.join('')}
-      </div>
     </div>
         `;
   }
@@ -64,9 +70,9 @@ export default class ListView {
   }
   getTodoItemTemplate({id, content, done}) {
     return `
-    <div class="item ${done ? 'done' : ''}">
+    <div class="item ${done ? 'done' : ''}" data-id="${id}">
       <span class="title">${content}</span>
-      <input class="check" type="checkbox" data-id="${id}" ${done ? 'checked' : ''}/>
+      <input class="check" type="checkbox" ${done ? 'checked' : ''}/>
     </div>
     `;
   }
