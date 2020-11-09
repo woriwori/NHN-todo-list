@@ -95,7 +95,7 @@ function setPosition(event) {
 
   const {top, left, width, height} = ghost.getBoundingClientRect();
 
-  if (!isConatinGhost()) {
+  if (!isContainGhost()) {
     hideGhostShadow();
     return;
   }
@@ -172,7 +172,7 @@ function hideGhostShadow() {
   ghostShadow.classList.add('dnd-none');
 }
 
-function isConatinGhost() {
+function isContainGhost() {
   const {top, left, width, height} = ghost.getBoundingClientRect();
   const belowGhostTopLeft = getDropzone(left, top);
   const belowGhostBottomRight = getDropzone(left + width, top + height - 5);
