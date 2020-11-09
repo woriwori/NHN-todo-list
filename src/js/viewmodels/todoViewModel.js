@@ -1,4 +1,5 @@
 import ViewModel from '@/js/viewmodels/proxyViewModel';
+import {sortAscBy, sortDescBy} from '@/lib/helper';
 
 export default class todoViewModel extends ViewModel {
   constructor() {
@@ -14,9 +15,16 @@ export default class todoViewModel extends ViewModel {
 
   // process data
   sortTodoList(todoList) {
+    const todos = [];
+    const completedTodos = [];
+    todoList.items.forEach((todo) => {
+      if (todo.done) completedTodos.push(todo);
+      else todos.push(todo);
+    });
+
     return {
       ...todoList,
-      items: todoList.items.sort((t1, t2) => t2.timestamp - t1.timestamp)
+      items: [...sortDescBy(todos, 'created'), ...sortAscBy(completedTodos, 'updated')]
     };
   }
 
@@ -27,7 +35,8 @@ export default class todoViewModel extends ViewModel {
       id: new Date().valueOf() + '',
       content,
       done: false,
-      timestamp: new Date().valueOf()
+      created: new Date().valueOf(),
+      updated: 0
     });
     this.proxy.todoList = {
       items,
@@ -37,7 +46,9 @@ export default class todoViewModel extends ViewModel {
   updateTodo(id, done) {
     let {items} = this.proxy.todoList;
     items = items.map((todo) => {
-      if (todo.id === id) todo.done = done;
+      if (todo.id === id) {
+        todo = {...todo, done, updated: new Date().valueOf()};
+      }
       return todo;
     });
     this.proxy.todoList = {
