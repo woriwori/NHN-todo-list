@@ -33,8 +33,10 @@ async function create(selector, x, y) {
 }
 
 async function ready() {
-  ghost.addEventListener('mousedown', () => {
-    document.body.append(ghost);
+  ghost.addEventListener('mousedown', (e) => {
+    originElement.parentNode.append(ghost);
+    setPosition(e);
+
     ghost.addEventListener('mouseup', handleMouseUp);
 
     document.addEventListener('mousemove', setPosition);
@@ -153,13 +155,19 @@ function setPosition(event) {
       }
     }
     hideGhost();
-  }, 200);
+  }, 100);
 }
 
 function hideGhost() {
   const {nextElementSibling, previousElementSibling, classList} = ghostShadow;
 
-  if (!isOriginElement(nextElementSibling) && !isOriginElement(previousElementSibling)) {
+  let isNotOriginElements = !isOriginElement(nextElementSibling) && !isOriginElement(previousElementSibling);
+  if (isElement(previousElementSibling) && !nextElementSibling) {
+    // 마지막 item을 마지막 위치(현재 위치)로 드래그 시도하는 경우에 대한 가드 처리
+    isNotOriginElements = isNotOriginElements && !isOriginElement(previousElementSibling.previousElementSibling);
+  }
+
+  if (isNotOriginElements) {
     classList.remove('dnd-none');
   } else {
     if (!classList.contains('dnd-none')) classList.add('dnd-none');
