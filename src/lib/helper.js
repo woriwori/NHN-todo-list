@@ -10,13 +10,25 @@ export const getElement = (selector) => {
 
   return element;
 };
+export const getElements = (selector) => {
+  let elements = [];
+
+  if (isString(selector)) {
+    elements = document.querySelectorAll(selector);
+  } else if (isElement(selector) || isWindow(selector)) {
+    elements = [selector];
+  }
+  // if (isNull(element)) throw Error('요소가 존재하지 않습니다.');
+
+  return elements;
+};
 
 export const insertNodeAfter = (newNode, referenceNode) =>
   referenceNode.parentNode.insertBefore(newNode, referenceNode.nextElementSibling);
 export const insertNodeBefore = (newNode, referenceNode) =>
   referenceNode.parentNode.insertBefore(newNode, referenceNode);
 export const isElement = (v) => v instanceof Element;
-export const isElements = (...args) => args.every((v) => v instanceof Element);
+export const isElements = (...args) => args.every((v) => isElement(v));
 export const isWindow = (v) => v === window;
 export const isString = (v) => typeof v === 'string';
 export const isEmptyString = (v) => v === '';
