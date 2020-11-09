@@ -38,7 +38,9 @@ export default class ListView {
 
   // view template
   getTemplate() {
-    const itemsTemplate = this.vm.todoList.items.map((todo) => this.getTodoItemTemplate(todo));
+    const filteredTodoList = this.filterByViewType();
+    const itemsTemplate = filteredTodoList.map((todo) => this.getTodoItemTemplate(todo));
+
     return `
     <div class="todo-list">
       <div class="scroll">
@@ -46,6 +48,19 @@ export default class ListView {
       </div>
     </div>
         `;
+  }
+  filterByViewType() {
+    const {todoList, viewType} = this.vm;
+    return todoList.items.filter(({done}) => {
+      switch (viewType) {
+        case 'all':
+          return true;
+        case 'todo':
+          return !done;
+        case 'done':
+          return done;
+      }
+    });
   }
   getTodoItemTemplate({id, content, done}) {
     return `
