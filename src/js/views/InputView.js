@@ -11,6 +11,7 @@ export default class InputView {
     this.root = root;
   }
 
+  // event binding
   bindEvent() {
     domutil.on('.todo-input', 'keydown', this.inputHandler.bind(this));
   }
@@ -22,9 +23,7 @@ export default class InputView {
   }
 
   // update view
-  update(prop) {
-    console.log('input view : ', this.vm.todoList);
-  }
+  update() {}
 
   // render
   render() {

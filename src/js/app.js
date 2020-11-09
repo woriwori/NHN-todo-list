@@ -10,13 +10,14 @@ export default class App {
   render() {
     setHTML(document.body, this.getTemplate());
 
+    const vm = new todoViewModel();
     const input = getElement('#input');
     const header = getElement('#header');
     const list = getElement('#list');
 
-    new InputView(new todoViewModel(), input).render();
-    new HeaderView(null, header).render();
-    new ListView(null, list).render();
+    new InputView(vm, input).render();
+    new HeaderView(vm, header).render();
+    new ListView(vm, list).render();
   }
   getTemplate() {
     // const root = getElement('#root');

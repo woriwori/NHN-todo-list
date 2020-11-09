@@ -16,6 +16,11 @@
       height: 30px;
       margin-right: 10px;
       border-radius: 16px;
+      cursor: pointer;
+    }
+    .active {
+      background-color: #1e97f8;
+      color: #ffffff;
     }
     .line {
       border-left: 1px solid #d1d1d1;
@@ -27,7 +32,11 @@
         height: 30px;
         border-radius: 16px;
         color: white;
+        cursor: pointer;
       }
+    }
+    .hide {
+      display: none;
     }
   }
   .total {

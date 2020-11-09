@@ -8,24 +8,33 @@ export default class todoViewModel extends ViewModel {
     return this.proxy;
   }
   setData() {
-    this.addData('todoList', [], this.sortTodoList);
+    this.addData('todoList', {items: [], length: 0}, this.sortTodoList);
     this.addData('viewType', 'all');
   }
 
   // process data
   sortTodoList(todoList) {
-    return todoList.sort((t1, t2) => t2.timestamp - t1.timestamp);
+    return {
+      ...todoList,
+      items: todoList.items.sort((t1, t2) => t2.timestamp - t1.timestamp)
+    };
   }
 
   // data CRUD
   addItem(content) {
-    const list = this.proxy.todoList;
-    list.push({
+    const {items} = this.proxy.todoList;
+    items.push({
       id: new Date().valueOf() + '',
       content,
       done: false,
       timestamp: new Date().valueOf()
     });
-    this.proxy.todoList = list;
+    this.proxy.todoList = {
+      items,
+      length: items.length
+    };
+  }
+  updateViewType(type) {
+    this.proxy.viewType = type;
   }
 }

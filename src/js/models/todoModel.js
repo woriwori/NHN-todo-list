@@ -1,4 +1,7 @@
 export default {
-  todoList: [],
+  todoList: {
+    items: [],
+    length: 0
+  },
   viewType: 'all'
 };
