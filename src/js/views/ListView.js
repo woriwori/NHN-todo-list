@@ -6,19 +6,13 @@ export default class ListView {
     console.log('ListView constructor!');
 
     this.vm = vm;
+    this.vm.addView(this);
     this.root = root;
   }
 
   // update view
   update(prop) {
-    // switch (prop) {
-    //   case 'todoList':
-    //     this.renderTotal();
-    //     break;
-    //   case 'viewType':
-    //     this.renderBtns();
-    //     break;
-    // }
+    this.render();
   }
 
   // render
@@ -28,23 +22,21 @@ export default class ListView {
 
   // view template
   getTemplate() {
+    const itemsTemplate = this.vm.todoList.items.map((todo) => this.getTodoItemTemplate(todo));
     return `
     <div class="todo-list">
       <div class="scroll">
-        <div class="item">
-          <span class="title">Title</span>
-          <input class="check" type="checkbox"/>
-        </div>
-        <div class="item done">
-          <span class="title">Title</span>
-          <input class="check" type="checkbox"/>
-        </div>
-        <div class="item">
-          <span class="title">Title</span>
-          <input class="check" type="checkbox"/>
-        </div>
+        ${itemsTemplate.join('')}
       </div>
     </div>
         `;
+  }
+  getTodoItemTemplate({content, done}) {
+    return `
+    <div class="item">
+      <span class="title">${content}</span>
+      <input class="check" type="checkbox" ${done ? 'checked' : ''}/>
+    </div>
+    `;
   }
 }

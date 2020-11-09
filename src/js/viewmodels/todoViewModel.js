@@ -26,7 +26,7 @@ export default class todoViewModel extends ViewModel {
     items.push({
       id: new Date().valueOf() + '',
       content,
-      done: true,
+      done: false,
       timestamp: new Date().valueOf()
     });
     this.proxy.todoList = {
