@@ -11,12 +11,13 @@
     display: flex;
     line-height: 30px;
     .btn {
-      background-color: #e0e0e0;
+      background-color: #cbc9c9;
       width: 80px;
       height: 30px;
       margin-right: 10px;
       border-radius: 16px;
       cursor: pointer;
+      color: white;
     }
     .active {
       background-color: #1e97f8;
