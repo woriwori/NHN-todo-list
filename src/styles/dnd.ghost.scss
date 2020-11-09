@@ -1,15 +1,16 @@
 .dnd-hidden-origin {
-  opacity: 0.7;
+  opacity: 0.4;
 }
 .dnd-none {
-  display: none;
+  display: none !important;
 }
 .dnd-shadow {
   z-index: 0;
-  opacity: 0.7 !important;
+  opacity: 0.4 !important;
 }
 .dnd-ghost {
-  position: fixed;
+  position: absolute;
   z-index: 1000;
-  border: 1px solid blue;
+  background-color: #deeefb !important;
+  border: 1px solid #1e97f8 !important;
 }
