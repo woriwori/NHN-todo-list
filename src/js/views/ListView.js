@@ -17,7 +17,7 @@ export default class ListView {
     domutil.on('.todo-list', 'click', this.clickHandler.bind(this));
 
     const dropzone = dnd.dropzone('.todo-list');
-    domutil.on(dropzone, 'drop', this.dropHandler.bind(this));
+    dropzone.on('drop', this.dropHandler.bind(this));
 
     dnd.draggable('.item');
   }
@@ -31,7 +31,7 @@ export default class ListView {
   }
   dropHandler(e) {
     console.dir(e);
-    const todoId = e.detail.target.getAttribute('data-id');
+    const todoId = e.target.getAttribute('data-id');
     const index = this.getOrder(todoId);
     this.vm.updateTodoOrder(todoId, index);
   }
