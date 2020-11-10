@@ -1,45 +1,8 @@
-import {getElement, isString, isEmptyString, isFunction, isObject} from '@/lib/helper';
+import {getElement, isString, isEmptyString, isFunction} from '@/lib/helper';
+import ListenerHelper from '@/lib/ListenerHelper';
 
+const listenersHelper = new ListenerHelper();
 let element = null;
-
-const listenersHelper = {
-  listeners: new Map(),
-  add(element, type, handler) {
-    const handlers = listenersHelper.getHandlers(element, type);
-    handlers.push(handler);
-  },
-  remove(element, type, handler) {
-    const filteredHandlers = listenersHelper.getHandlers(element, type).filter((f) => f !== handler);
-    listenersHelper.setHandlers(element, type, filteredHandlers);
-  },
-  getEventTypes(element) {
-    // return : Map { click => [], focus => [], ... }
-    const isEmptyEventTypes = !listenersHelper.listeners.has(element);
-    if (isEmptyEventTypes) {
-      return listenersHelper.listeners.set(element, new Map()).get(element);
-    }
-
-    return listenersHelper.listeners.get(element);
-  },
-  getHandlers(element, type) {
-    // return :  [ () => {..}, ... ]
-    const eventTypes = listenersHelper.getEventTypes(element);
-    const hasEventType = eventTypes.has(type);
-    let handlers = eventTypes.get(type);
-
-    if (!hasEventType) {
-      handlers = listenersHelper.initializeHandlers(eventTypes, type);
-    }
-
-    return handlers;
-  },
-  initializeHandlers(eventTypes, type) {
-    return eventTypes.set(type, []).get(type);
-  },
-  setHandlers(element, type, handlers) {
-    listenersHelper.getEventTypes(element).set(type, handlers);
-  }
-};
 
 let addEvent = function (type, handler) {
   if (document.addEventListener) {
@@ -114,38 +77,4 @@ export const removeAll = (selector, type) => {
   if (!isString(type) || isEmptyString(type)) throw Error('올바른 이벤트 타입이 필요합니다.');
 
   listenersHelper.getHandlers(element, type).forEach((fn) => removeEvent(type, fn));
-};
-
-/* 
-custom events - mixin 
-*/
-const mixinOn = (obj) => (type, handler) => {
-  if (!isString(type) || isEmptyString(type)) throw Error('올바른 이벤트 타입이 필요합니다.');
-  if (!isFunction(handler)) throw Error('올바른 이벤트 핸들러 함수가 필요합니다.');
-
-  listenersHelper.add(obj, type, handler);
-};
-
-const mixinFire = (obj) => (type, eventData) => {
-  if (!isString(type) || isEmptyString(type)) throw Error('올바른 이벤트 타입이 필요합니다.');
-
-  const handlers = listenersHelper.getHandlers(obj, type);
-  handlers.forEach((fn) => fn(eventData));
-};
-
-const mixinOff = (obj) => (type, handler) => {
-  if (!isString(type) || isEmptyString(type)) throw Error('올바른 이벤트 타입이 필요합니다.');
-  if (!isFunction(handler)) throw Error('올바른 이벤트 핸들러 함수가 필요합니다.');
-
-  listenersHelper.remove(obj, type, handler);
-};
-
-export const CustomEvents = {
-  mixin(obj) {
-    if (!isObject(obj)) throw Error('올바른 객체가 필요합니다.');
-
-    obj.on = mixinOn(obj);
-    obj.fire = mixinFire(obj);
-    obj.off = mixinOff(obj);
-  }
 };
