@@ -95,6 +95,12 @@ function handleMouseUp(event) {
   }
 }
 
+function handleKeyDown(e) {
+  if (e.keyCode === 27) {
+    destroy();
+  }
+}
+
 function setPosition(event) {
   document.body.classList.add('dnd-select-none');
 
