@@ -1,10 +1,9 @@
-import {getElement, isElement, isElements, insertNodeAfter, insertNodeBefore} from '@/lib/helper';
+import {getElement, isElement, isElements, insertNodeAfter, insertNodeBefore, debounce} from '@/lib/helper';
 import '@/styles/dnd.ghost.scss';
 
 const ERROR_CODE = {
   E01: 'dropzone이 아닙니다.'
 };
-let debounce = null;
 let clickedLeft = 0;
 let clickedTop = 0;
 let originElement = null;
@@ -100,8 +99,7 @@ function setPosition(event) {
     return;
   }
 
-  clearTimeout(debounce);
-  debounce = setTimeout(() => {
+  debounce(() => {
     const dropzone = getDropzone(left, top);
 
     const item = getDraggableItem(left + width / 2, top + height / 2);
@@ -153,7 +151,7 @@ function setPosition(event) {
       }
     }
     hideGhost();
-  }, 200);
+  }, 200)();
 }
 
 function hideGhost() {

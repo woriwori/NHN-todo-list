@@ -23,3 +23,11 @@ export const isEmptyString = (v) => v === '';
 export const isFunction = (v) => typeof v === 'function';
 export const isObject = (v) => Object.prototype.toString.call(v) === '[object Object]';
 export const isNull = (v) => v === null;
+export const debounce = (fn, time) => {
+  let timer;
+  return function () {
+    const args = arguments;
+    clearTimeout(timer);
+    timer = setTimeout(() => fn(args), time);
+  };
+};
