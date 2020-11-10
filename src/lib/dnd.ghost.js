@@ -1,4 +1,4 @@
-import {getElement, isElement, isElements, insertNodeAfter, insertNodeBefore, debounce} from '@/lib/helper';
+import {getElement, isElement, isElements, insertNodeAfter, insertNodeBefore, debounce, isNull} from '@/lib/helper';
 import '@/styles/dnd.ghost.scss';
 
 const ERROR_CODE = {
@@ -29,12 +29,14 @@ async function create(selector, x, y) {
   initializeGhostShadow();
 
   originElement.classList.add('dnd-hidden-origin');
+
+  locateGhost = locateGhost();
 }
 
 async function ready() {
-  ghost.addEventListener('mousedown', (e) => {
-    clearTimeout(debounce);
-    debounce = setTimeout(() => {
+  ghost.addEventListener(
+    'mousedown',
+    debounce((e) => {
       originElement.parentNode.append(ghost);
       setPosition(e);
 
@@ -42,8 +44,8 @@ async function ready() {
 
       document.addEventListener('keydown', handleKeyDown);
       document.addEventListener('mousemove', setPosition);
-    }, 200);
-  });
+    }, 200)
+  );
 }
 
 export function execute() {
@@ -63,14 +65,14 @@ function finish(event) {
 
 function destroy() {
   originElement.classList.remove('dnd-hidden-origin');
-  ghost.parentNode.removeChild(ghost);
+  if (isElement(ghost.parentNode)) ghost.parentNode.removeChild(ghost);
   if (isElement(ghostShadow.parentNode)) ghostShadow.parentNode.removeChild(ghostShadow);
 
   originElement = null;
   ghost = null;
   ghostShadow = null;
 
-  document.body.classList.remove('dnd-select-none ');
+  document.body.classList.remove('dnd-select-none');
 }
 
 function initializeGhost() {
@@ -109,14 +111,16 @@ function setPosition(event) {
   ghost.style.left = `${pageX - clickedLeft}px`;
   ghost.style.top = `${pageY - clickedTop}px`;
 
-  const {top, left, width, height} = ghost.getBoundingClientRect();
-
   if (!isContainGhost()) {
     hideGhostShadow();
-    return;
+  } else {
+    locateGhost();
   }
+}
 
-  debounce(() => {
+function locateGhost() {
+  return debounce(() => {
+    const {top, left, width, height} = ghost.getBoundingClientRect();
     const dropzone = getDropzone(left, top);
 
     const item = getDraggableItem(left + width / 2, top + height / 2);
@@ -130,16 +134,16 @@ function setPosition(event) {
     }
 
     // draggable 요소 사이에 공백이 있어서 draggable item이 안 잡히는 경우 모든 item을 확인
-    const children = dropzone.children;
+    const children = isElement(dropzone) ? dropzone.children : [];
     const len = children.length;
 
     let child, childRect;
     if (len < 2) {
       child = children[0] || null;
-      childRect = child && child.getBoundingClientRect();
+      childRect = !isNull(child) && child.getBoundingClientRect();
 
       if (childRect && childRect.top > top) dropzone.prepend(ghostShadow);
-      else dropzone.append(ghostShadow);
+      else isElement(dropzone) && dropzone.append(ghostShadow);
 
       hideGhost();
       return;
@@ -168,7 +172,7 @@ function setPosition(event) {
       }
     }
     hideGhost();
-  }, 100)();
+  }, 200);
 }
 
 function hideGhost() {
@@ -216,8 +220,7 @@ function insertBetweenDraggableItems(item, top) {
 function getDropzone(x, y) {
   const belowElements = document.elementsFromPoint(x, y);
   const dropzone = belowElements.find((el) => el.getAttribute('dropzone') === 'true');
-
-  return dropzone;
+  return dropzone || null;
 }
 
 function getDraggableItem(x, y) {
