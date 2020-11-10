@@ -38,3 +38,11 @@ export const isNull = (v) => v === null;
 export const setHTML = (target, template) => (target.innerHTML = template);
 export const sortAscBy = (list, condition) => list.sort((a, b) => a[condition] - b[condition]);
 export const sortDescBy = (list, condition) => list.sort((a, b) => b[condition] - a[condition]);
+export const debounce = (fn, time) => {
+  let timer;
+  return function () {
+    const args = arguments;
+    clearTimeout(timer);
+    timer = setTimeout(() => fn(args), time);
+  };
+};

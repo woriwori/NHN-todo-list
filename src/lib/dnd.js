@@ -1,5 +1,6 @@
 import {getElement, getElements, isString, isEmptyString} from '@/lib/helper';
 import * as domutil from '@/lib/domutil';
+import CustomEvents from '@/lib/CustomEvents';
 import * as ghost from '@/lib/dnd.ghost';
 
 const dnd = {
@@ -28,6 +29,7 @@ const dnd = {
     }
 
     element.setAttribute('dropzone', true);
+    CustomEvents.mixin(element);
 
     return element;
   }

@@ -1,10 +1,9 @@
-import {getElement, isElement, isElements, insertNodeAfter, insertNodeBefore} from '@/lib/helper';
+import {getElement, isElement, isElements, insertNodeAfter, insertNodeBefore, debounce} from '@/lib/helper';
 import '@/styles/dnd.ghost.scss';
 
 const ERROR_CODE = {
   E01: 'dropzone이 아닙니다.'
 };
-let debounce = null;
 let clickedLeft = 0;
 let clickedTop = 0;
 let originElement = null;
@@ -55,10 +54,9 @@ function finish(event) {
   if (!isContain) throw Error(ERROR_CODE.E01);
 
   const dropzone = getDropzone(event.clientX, event.clientY);
-  const dropEvent = getDropEvent();
 
   dropzone.replaceChild(originElement, ghostShadow); // ghostShadow를 originElement로 변경
-  dropzone.dispatchEvent(dropEvent);
+  dropzone.fire('drop', {target: originElement, isContain});
 
   destroy(); // ghost 초기화
 }
@@ -73,7 +71,6 @@ function destroy() {
   ghostShadow = null;
 
   document.body.classList.remove('dnd-select-none ');
-
 }
 
 function initializeGhost() {
@@ -119,8 +116,7 @@ function setPosition(event) {
     return;
   }
 
-  clearTimeout(debounce);
-  debounce = setTimeout(() => {
+  debounce(() => {
     const dropzone = getDropzone(left, top);
 
     const item = getDraggableItem(left + width / 2, top + height / 2);
@@ -172,7 +168,7 @@ function setPosition(event) {
       }
     }
     hideGhost();
-  }, 100);
+  }, 100)();
 }
 
 function hideGhost() {
@@ -232,6 +228,5 @@ function getDraggableItem(x, y) {
   return draggableItem;
 }
 
-const getDropEvent = () => new CustomEvent('drop', {bubbles: false, detail: {target: originElement, isContain}});
 const isOriginElement = (element) => isElement(element) && element.classList.contains('dnd-hidden-origin');
 const clone = (element) => element.cloneNode(true);

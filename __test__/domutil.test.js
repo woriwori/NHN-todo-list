@@ -118,7 +118,7 @@ describe('이벤트 바인딩 (공통)', () => {
   });
 });
 
-describe('이벤트 바인딩', () => {
+describe('이벤트 핸들러 등록 / 삭제', () => {
   test('이벤트 바인딩 검사', () => {
     // when
     domutil.on(element, eventType, mockFn);
