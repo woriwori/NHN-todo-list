@@ -34,12 +34,16 @@ async function create(selector, x, y) {
 
 async function ready() {
   ghost.addEventListener('mousedown', (e) => {
-    originElement.parentNode.append(ghost);
-    setPosition(e);
+    clearTimeout(debounce);
+    debounce = setTimeout(() => {
+      originElement.parentNode.append(ghost);
+      setPosition(e);
 
-    ghost.addEventListener('mouseup', handleMouseUp);
+      ghost.addEventListener('mouseup', handleMouseUp);
 
-    document.addEventListener('mousemove', setPosition);
+      document.addEventListener('keydown', handleKeyDown);
+      document.addEventListener('mousemove', setPosition);
+    }, 200);
   });
 }
 
