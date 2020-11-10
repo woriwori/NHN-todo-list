@@ -1,6 +1,6 @@
 import * as domutil from '@/lib/domutil';
 import dnd from '@/lib/dnd';
-import {setHTML} from '@/lib/helper';
+import {setHTML, getElement} from '@/lib/helper';
 import '@/styles/todo-list/list.scss';
 
 export default class ListView {
@@ -18,6 +18,7 @@ export default class ListView {
 
     const dropzone = dnd.dropzone('.todo-list');
     domutil.on(dropzone, 'drop', this.dropHandler.bind(this));
+
     dnd.draggable('.item');
   }
   clickHandler(e) {
@@ -30,6 +31,12 @@ export default class ListView {
   }
   dropHandler(e) {
     console.dir(e);
+    const todoId = e.detail.target.getAttribute('data-id');
+    const index = this.getOrder(todoId);
+    this.vm.updateTodoOrder(todoId, index);
+  }
+  getOrder(todoId) {
+    return [...getElement('.todo-list').children].findIndex((todo) => todo.getAttribute('data-id') === todoId);
   }
 
   // update view

@@ -18,13 +18,13 @@ export default class todoViewModel extends ViewModel {
     const todos = [];
     const completedTodos = [];
     todoList.items.forEach((todo) => {
-      if (todo.done) completedTodos.push(todo);
+      if (todo.done) completedTodos.unshift(todo);
       else todos.push(todo);
     });
 
     return {
       ...todoList,
-      items: [...sortDescBy(todos, 'created'), ...sortAscBy(completedTodos, 'updated')]
+      items: [...todos, ...completedTodos]
     };
   }
 
@@ -66,5 +66,18 @@ export default class todoViewModel extends ViewModel {
   }
   updateViewType(type) {
     this.proxy.viewType = type;
+  }
+  updateTodoOrder(todoId, index) {
+    const todo = this.getTodo(todoId);
+    let {items} = this.proxy.todoList;
+    items = items.filter((todo) => todo.id !== todoId);
+    items.splice(index, 0, todo);
+    this.proxy.todoList = {
+      items,
+      length: items.length
+    };
+  }
+  getTodo(todoId) {
+    return this.proxy.todoList.items.find((todo) => todo.id === todoId);
   }
 }
