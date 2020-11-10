@@ -67,15 +67,20 @@ function destroy() {
   originElement = null;
   ghost = null;
   ghostShadow = null;
+
+  document.body.classList.remove('dnd-select-none ');
+
 }
 
 function initializeGhost() {
   ghost.classList.add('dnd-ghost');
+  ghost.classList.add('dnd-select-none');
 }
 
 function initializeGhostShadow() {
   ghostShadow.classList.add('dnd-none');
   ghostShadow.classList.add('dnd-shadow');
+  ghostShadow.classList.add('dnd-select-none');
 }
 
 function handleMouseUp(event) {
@@ -91,6 +96,8 @@ function handleMouseUp(event) {
 }
 
 function setPosition(event) {
+  document.body.classList.add('dnd-select-none');
+
   const {pageX, pageY} = event;
   ghost.style.left = `${pageX - clickedLeft}px`;
   ghost.style.top = `${pageY - clickedTop}px`;
