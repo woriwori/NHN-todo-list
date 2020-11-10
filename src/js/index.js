@@ -1,5 +1,4 @@
 import dnd from '@/lib/dnd';
-import * as domutil from '@/lib/domutil';
 import '@/styles/index.scss';
 
 const str = `
@@ -21,9 +20,11 @@ document.querySelectorAll('.item').forEach((el) => dnd.draggable(el));
 const dropzone = dnd.dropzone('.list');
 const dropzone2 = dnd.dropzone('.list2');
 
-domutil.on(dropzone, 'drop', (eventData) => {
-  console.log('eventData(dropzone) : ', eventData.detail);
+dropzone.on('drop', (eventData) => {
+  console.log(eventData.target); // 드롭 된 엘리먼트
+  console.log(eventData.isContain); // 완전 포함 여부
 });
-domutil.on(dropzone2, 'drop', (eventData) => {
-  console.log('eventData(dropzone2) : ', eventData.detail);
+dropzone2.on('drop', (eventData) => {
+  console.log(eventData.target); // 드롭 된 엘리먼트
+  console.log(eventData.isContain); // 완전 포함 여부
 });

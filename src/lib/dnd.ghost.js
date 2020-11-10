@@ -48,10 +48,9 @@ function finish(event) {
   if (!isContain) throw Error(ERROR_CODE.E01);
 
   const dropzone = getDropzone(event.clientX, event.clientY);
-  const dropEvent = getDropEvent();
 
   dropzone.replaceChild(originElement, ghostShadow); // ghostShadow를 originElement로 변경
-  dropzone.dispatchEvent(dropEvent);
+  dropzone.fire('drop', {target: originElement, isContain});
 
   destroy(); // ghost 초기화
 }
@@ -205,6 +204,5 @@ function getDraggableItem(x, y) {
   return draggableItem;
 }
 
-const getDropEvent = () => new CustomEvent('drop', {bubbles: false, detail: {target: originElement, isContain}});
 const isOriginElement = (element) => isElement(element) && element.classList.contains('dnd-hidden-origin');
 const clone = (element) => element.cloneNode(true);
