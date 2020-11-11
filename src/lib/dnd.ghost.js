@@ -10,6 +10,7 @@ let originElement = null;
 let ghost = null;
 let ghostShadow = null;
 let isContain = false;
+let locateGhostFn = null;
 
 export function make(selector, x, y) {
   create(selector, x, y).then(ready).then(execute);
@@ -30,7 +31,7 @@ async function create(selector, x, y) {
 
   originElement.classList.add('dnd-hidden-origin');
 
-  locateGhost = locateGhost();
+  locateGhostFn = debounce(locateGhost, 200);
 }
 
 async function ready() {
@@ -114,65 +115,63 @@ function setPosition(event) {
   if (!isContainGhost()) {
     hideGhostShadow();
   } else {
-    locateGhost();
+    locateGhostFn();
   }
 }
 
 function locateGhost() {
-  return debounce(() => {
-    const {top, left, width, height} = ghost.getBoundingClientRect();
-    const dropzone = getDropzone(left, top);
+  const {top, left, width, height} = ghost.getBoundingClientRect();
+  const dropzone = getDropzone(left, top);
 
-    const item = getDraggableItem(left + width / 2, top + height / 2);
-    if (isElement(item)) {
-      // draggable 요소의 앞 또는 뒤에 추가
-      insertBetweenDraggableItems(item, top);
+  const item = getDraggableItem(left + width / 2, top + height / 2);
+  if (isElement(item)) {
+    // draggable 요소의 앞 또는 뒤에 추가
+    insertBetweenDraggableItems(item, top);
 
-      // drag할 위치가 drag하려는 요소의 원래 위치가 같으면 preview(ghost) 숨김
-      hideGhost();
-      return;
-    }
-
-    // draggable 요소 사이에 공백이 있어서 draggable item이 안 잡히는 경우 모든 item을 확인
-    const children = isElement(dropzone) ? dropzone.children : [];
-    const len = children.length;
-
-    let child, childRect;
-    if (len < 2) {
-      child = children[0] || null;
-      childRect = !isNull(child) && child.getBoundingClientRect();
-
-      if (childRect && childRect.top > top) dropzone.prepend(ghostShadow);
-      else isElement(dropzone) && dropzone.append(ghostShadow);
-
-      hideGhost();
-      return;
-    }
-
-    let i, nextChild, nextChildRect;
-    for (i = 1; i < len; i++) {
-      child = children[i];
-
-      childRect = child.getBoundingClientRect();
-      if (childRect.top > top) {
-        dropzone.prepend(ghostShadow);
-        break;
-      }
-
-      nextChild = children[i + 1] || null;
-      if (!nextChild) {
-        dropzone.append(ghostShadow);
-        break;
-      }
-
-      nextChildRect = nextChild.getBoundingClientRect();
-      if (childRect.bottom <= top && nextChildRect.top > top) {
-        insertNodeAfter(ghostShadow, child);
-        break;
-      }
-    }
+    // drag할 위치가 drag하려는 요소의 원래 위치가 같으면 preview(ghost) 숨김
     hideGhost();
-  }, 200);
+    return;
+  }
+
+  // draggable 요소 사이에 공백이 있어서 draggable item이 안 잡히는 경우 모든 item을 확인
+  const children = isElement(dropzone) ? dropzone.children : [];
+  const len = children.length;
+
+  let child, childRect;
+  if (len < 2) {
+    child = children[0] || null;
+    childRect = !isNull(child) && child.getBoundingClientRect();
+
+    if (childRect && childRect.top > top) dropzone.prepend(ghostShadow);
+    else isElement(dropzone) && dropzone.append(ghostShadow);
+
+    hideGhost();
+    return;
+  }
+
+  let i, nextChild, nextChildRect;
+  for (i = 1; i < len; i++) {
+    child = children[i];
+
+    childRect = child.getBoundingClientRect();
+    if (childRect.top > top) {
+      dropzone.prepend(ghostShadow);
+      break;
+    }
+
+    nextChild = children[i + 1] || null;
+    if (!nextChild) {
+      dropzone.append(ghostShadow);
+      break;
+    }
+
+    nextChildRect = nextChild.getBoundingClientRect();
+    if (childRect.bottom <= top && nextChildRect.top > top) {
+      insertNodeAfter(ghostShadow, child);
+      break;
+    }
+  }
+  hideGhost();
 }
 
 function hideGhost() {
