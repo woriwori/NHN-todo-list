@@ -77,14 +77,11 @@ function destroy() {
 }
 
 function initializeGhost() {
-  ghost.classList.add('dnd-ghost');
-  ghost.classList.add('dnd-select-none');
+  ghost.classList.add('dnd-ghost', 'dnd-select-none');
 }
 
 function initializeGhostShadow() {
-  ghostShadow.classList.add('dnd-none');
-  ghostShadow.classList.add('dnd-shadow');
-  ghostShadow.classList.add('dnd-select-none');
+  ghostShadow.classList.add('dnd-none', 'dnd-shadow', 'dnd-select-none');
 }
 
 function handleMouseUp(event) {
