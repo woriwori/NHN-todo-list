@@ -46,19 +46,22 @@ export default class HeaderView {
   // view template
   getTemplate() {
     const {viewType, todoList} = this.vm;
+    const {length} = todoList;
+    const completedLength = this.vm.getCompletedTodoListLength();
+    console.log(completedLength);
     return `
     <div class="todo-header">
       <div class="btns">
         <div class="btn ${viewType === 'all' ? 'active' : ''}" data-type="all">전체</div>
         <div class="btn ${viewType === 'todo' ? 'active' : ''}" data-type="todo">완료 전</div>
         <div class="btn ${viewType === 'done' ? 'active' : ''}" data-type="done">완료 후</div>
-        <div class="line ${viewType === 'done' ? '' : 'hide'}"">
-          <div class="btn-remove" data-type="remove">전체 삭제</div>
+        <div class="line ${viewType === 'done' ? '' : 'hide'} ">
+          <div class="btn-remove ${completedLength === 0 ? 'disable' : ''}" data-type="remove">전체 삭제</div>
         </div>
       </div>
       <div class="total">
         <span class="label">Total</span>
-        <span>${todoList.length}</span>
+        <span>${length}</span>
       </div>
     </div>
       `;

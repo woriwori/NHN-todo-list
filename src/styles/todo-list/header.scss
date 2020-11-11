@@ -11,13 +11,14 @@
     display: flex;
     line-height: 30px;
     .btn {
-      background-color: #cbc9c9;
+      background-color: #fafafa;
       width: 80px;
       height: 30px;
       margin-right: 10px;
       border-radius: 16px;
       cursor: pointer;
-      color: white;
+      color: #1b97f8;
+      border: 1px solid #1b97f8;
     }
     .active {
       background-color: #1e97f8;
@@ -34,6 +35,12 @@
         border-radius: 16px;
         color: white;
         cursor: pointer;
+
+        &.disable {
+          background-color: #e0e0e0;
+          cursor: not-allowed;
+          pointer-events: none;
+        }
       }
     }
     .hide {

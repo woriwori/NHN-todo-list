@@ -29,6 +29,11 @@ export default class todoViewModel extends ViewModel {
   }
 
   // data CRUD
+  getCompletedTodoListLength() {
+    let {items} = this.proxy.todoList;
+    items = items.filter((todo) => todo.done);
+    return items.length;
+  }
   addTodo(content) {
     const {items} = this.proxy.todoList;
     items.push({
