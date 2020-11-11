@@ -22,19 +22,13 @@ export default class ViewModel {
   addView(view) {
     this.views.add(view);
   }
-  removeView(view) {
-    this.views.delete(view);
+  updateView(updatedProp) {
+    this.views.forEach((v) => v.update(updatedProp));
   }
-  updateView(what) {
-    this.views.forEach((v) => v.update(what));
-  }
-  addData(prop, initialData, callback = (value) => value) {
+  addData(prop, initialData, callback = () => {}) {
     this.data.set(prop, {
       initialData,
       callback
     });
-  }
-  deleteData(prop) {
-    if (sessionStorage.getItem(prop)) sessionStorage.removeItem(prop);
   }
 }

@@ -20,7 +20,6 @@ export default class App {
     new ListView(vm, list).render();
   }
   getTemplate() {
-    // const root = getElement('#root');
     return `
       <div id="root" class="todo">
         <div id="input"></div>

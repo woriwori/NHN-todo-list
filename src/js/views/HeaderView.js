@@ -4,11 +4,21 @@ import '@/styles/todo-list/header.scss';
 
 export default class HeaderView {
   constructor(vm, root) {
-    console.log('HeaderView constructor!');
-
     this.vm = vm;
     this.vm.addView(this);
     this.root = root;
+  }
+
+  // update view
+  update(updatedProp) {
+    this.render();
+  }
+
+  // render
+  render() {
+    setHTML(this.root, this.getTemplate());
+
+    this.bindEvent();
   }
 
   // event binding
@@ -31,24 +41,12 @@ export default class HeaderView {
     }
   }
 
-  // update view
-  update() {
-    this.render();
-  }
-
-  // render
-  render() {
-    setHTML(this.root, this.getTemplate());
-
-    this.bindEvent();
-  }
-
   // view template
   getTemplate() {
     const {viewType, todoList} = this.vm;
     const {length} = todoList;
     const completedLength = this.vm.getCompletedTodoListLength();
-    console.log(completedLength);
+
     return `
     <div class="todo-header">
       <div class="btns">

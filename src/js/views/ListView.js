@@ -12,6 +12,18 @@ export default class ListView {
     this.root = root;
   }
 
+  // update view
+  update(updatedProp) {
+    this.render();
+  }
+
+  // render
+  render() {
+    setHTML(this.root, this.getTemplate());
+
+    this.bindEvent();
+  }
+
   // event binding
   bindEvent() {
     domutil.on('.todo-list', 'click', this.clickHandler.bind(this));
@@ -23,6 +35,7 @@ export default class ListView {
   }
   clickHandler(e) {
     const el = e.target;
+
     if (el.classList.contains('check')) {
       const todoId = el.parentNode.getAttribute('data-id');
       const checked = el.checked;
@@ -30,31 +43,17 @@ export default class ListView {
     }
   }
   dropHandler(e) {
-    console.dir(e);
-    const todoId = e.target.getAttribute('data-id');
+    const el = e.target;
+    const todoId = el.getAttribute('data-id');
     const index = this.getOrder(todoId);
+
     this.vm.updateTodoOrder(todoId, index);
-  }
-  getOrder(todoId) {
-    return [...getElement('.todo-list').children].findIndex((todo) => todo.getAttribute('data-id') === todoId);
-  }
-
-  // update view
-  update(prop) {
-    this.render();
-  }
-
-  // render
-  render() {
-    setHTML(this.root, this.getTemplate());
-
-    this.bindEvent();
   }
 
   // view template
   getTemplate() {
-    const filteredTodoList = this.filterByViewType();
-    const itemsTemplate = filteredTodoList.map((todo) => this.getTodoItemTemplate(todo));
+    const filteredTodos = this.filterByViewType();
+    const itemsTemplate = filteredTodos.map((todo) => this.getTodoItemTemplate(todo));
 
     return `
     <div class="todo-list">
@@ -62,6 +61,16 @@ export default class ListView {
     </div>
         `;
   }
+
+  getTodoItemTemplate({id, content, done}) {
+    return `
+    <div class="item ${done ? 'done' : ''}" data-id="${id}">
+      <span class="title">${content}</span>
+      <input class="check" type="checkbox" ${done ? 'checked' : ''}/>
+    </div>
+    `;
+  }
+
   filterByViewType() {
     const {todoList, viewType} = this.vm;
     return todoList.items.filter(({done}) => {
@@ -75,12 +84,10 @@ export default class ListView {
       }
     });
   }
-  getTodoItemTemplate({id, content, done}) {
-    return `
-    <div class="item ${done ? 'done' : ''}" data-id="${id}">
-      <span class="title">${content}</span>
-      <input class="check" type="checkbox" ${done ? 'checked' : ''}/>
-    </div>
-    `;
+
+  getOrder(todoId) {
+    const todos = [...getElement('.todo-list').children];
+
+    return todos.findIndex((todo) => todo.getAttribute('data-id') === todoId);
   }
 }

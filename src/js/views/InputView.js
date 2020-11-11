@@ -4,11 +4,19 @@ import '@/styles/todo-list/input.scss';
 
 export default class InputView {
   constructor(vm, root) {
-    console.log('InputView constructor!');
-
     this.vm = vm;
     this.vm.addView(this);
     this.root = root;
+  }
+
+  // update view
+  update(updatedProp) {}
+
+  // render
+  render() {
+    setHTML(this.root, this.getTemplate());
+
+    this.bindEvent();
   }
 
   // event binding
@@ -20,16 +28,6 @@ export default class InputView {
       this.vm.addTodo(e.target.value.trim());
       e.target.value = ''; // clear
     }
-  }
-
-  // update view
-  update() {}
-
-  // render
-  render() {
-    setHTML(this.root, this.getTemplate());
-
-    this.bindEvent();
   }
 
   // view template
