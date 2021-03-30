@@ -1,5 +1,5 @@
 import ListenerHelper from '@/lib/ListenerHelper';
-import {isObject, isString, isEmptyString, isFunction} from '@/lib/helper';
+import {isObject, isString, isEmptyString, isFunction, isElement} from '@/lib/helper';
 
 const listenersHelper = new ListenerHelper();
 
@@ -26,7 +26,7 @@ const mixinOff = (obj) => (type, handler) => {
 
 const CustomEvents = {
   mixin(obj) {
-    if (!isObject(obj)) throw Error('올바른 객체가 필요합니다.');
+    if (!isElement(obj) && !isObject(obj)) throw Error('올바른 타겟이 필요합니다.');
 
     obj.on = mixinOn(obj);
     obj.fire = mixinFire(obj);

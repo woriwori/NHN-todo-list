@@ -10,10 +10,24 @@ export const getElement = (selector) => {
 
   return element;
 };
+
+export const insertNodeAfter = (newNode, referenceNode) =>
+  referenceNode.parentNode.insertBefore(newNode, referenceNode.nextElementSibling);
+export const insertNodeBefore = (newNode, referenceNode) =>
+  referenceNode.parentNode.insertBefore(newNode, referenceNode);
 export const isElement = (v) => v instanceof Element;
+export const isElements = (...args) => args.every((v) => v instanceof Element);
 export const isWindow = (v) => v === window;
 export const isString = (v) => typeof v === 'string';
 export const isEmptyString = (v) => v === '';
 export const isFunction = (v) => typeof v === 'function';
 export const isObject = (v) => Object.prototype.toString.call(v) === '[object Object]';
 export const isNull = (v) => v === null;
+export const debounce = (fn, time) => {
+  let timer;
+  return function () {
+    const args = arguments;
+    clearTimeout(timer);
+    timer = setTimeout(() => fn(args), time);
+  };
+};

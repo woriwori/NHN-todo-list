@@ -1,0 +1,15 @@
+.dnd-hidden-origin {
+  opacity: 0.7;
+}
+.dnd-none {
+  display: none;
+}
+.dnd-shadow {
+  z-index: 0;
+  opacity: 0.7 !important;
+}
+.dnd-ghost {
+  position: fixed;
+  z-index: 1000;
+  border: 1px solid blue;
+}
